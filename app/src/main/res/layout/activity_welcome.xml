@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:backgroundTint="#000000"
+    android:orientation="vertical"
+    tools:context=".WelcomeActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        style="@style/textStyleUp"
+        android:paddingTop="115dp"
+        android:text="@string/welcome_text" />
+
+    <TextView
+        android:id="@+id/textView2"
+        style="@style/textStyleDown"
+        android:paddingTop="90dp"
+        android:text="@string/app_info" />
+
+    <Button
+        android:id="@+id/continue_button"
+        android:text="@string/continue_button"
+        style="@style/buttonStyle" />
+</androidx.appcompat.widget.LinearLayoutCompat>
