@@ -36,11 +36,13 @@
 
         </LinearLayout>
     </ScrollView>
+
     <Button
         android:id="@+id/startDemoButton"
         style="@style/buttonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/start_demo_button"/>
+        android:inputType="textPostalAddress"
+        android:text="@string/start_demo_button" />
 </LinearLayout>
 

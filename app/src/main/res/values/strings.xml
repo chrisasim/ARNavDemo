@@ -46,15 +46,15 @@
     <string name="dest12">Laboratory</string>
     <string name="dest13">Telecommunications laboratory</string>
     <string name="dest14">EDIP members</string>
-    <string name="telecommunicationsButton">Telecommunications laboratory</string>
+    <string name="telecommunicationsButton">Telecommunications lab</string>
     <string name="A1OfficeButton">Graduate Student office(A.1)</string>
     <string name="A2Office">Mr. Bleka\'s office</string>
     <string name="A3Office">Mr. Vlacho\'s office</string>
-    <string name="A5office">Graduate Student office (A.5)</string>
-    <string name="A6Office">Graduate Student office (A.6)</string>
+    <string name="A5office">Graduate Student office(A.5)</string>
+    <string name="A6Office">Graduate Student office(A.6)</string>
     <string name="A7office">Mr. Zarra\'s office</string>
     <string name="A8Office">Mr. Polenaki\'s office</string>
-    <string name="A10Office">Graduate Student office (A.10)</string>
+    <string name="A10Office">Graduate Student office(A.10)</string>
     <string name="edidOffice">EDIP members</string>
     <string name="submit">Submit</string>
 </resources>

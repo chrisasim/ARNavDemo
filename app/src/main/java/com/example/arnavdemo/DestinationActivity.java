@@ -24,6 +24,7 @@ import java.util.ArrayList;
 public class DestinationActivity extends AppCompatActivity {
 
     private ArrayList<Integer> locationPoint = new ArrayList<>();
+    private String url;
     private ArrayList<Integer> destinationPolygon = new ArrayList<>();
 
     private Button btnGraduateStudentOfficeA1;
@@ -52,6 +53,7 @@ public class DestinationActivity extends AppCompatActivity {
 //        locationPoint = getIntent().getIntegerArrayListExtra("coords");
 //        Log.d("coordinateX", String.valueOf(locationPoint.get(1)));
 
+        url = getIntent().getStringExtra("url");
         enterOfficeId = findViewById(R.id.txtenterOfficeId);
         submit = findViewById(R.id.btnSubmit);
 
@@ -72,6 +74,7 @@ public class DestinationActivity extends AppCompatActivity {
                         intent.putIntegerArrayListExtra("polygonCoords", destinationPolygon);
                         locationPoint = getIntent().getIntegerArrayListExtra("coords");
                         intent.putIntegerArrayListExtra("pointCoords", locationPoint);
+                        intent.putExtra("urlCoords", url);
                         startActivity(intent);
                         Toast.makeText(getApplicationContext(), "You select your destination successfully", Toast.LENGTH_SHORT).show();
                     }
@@ -141,6 +144,7 @@ public class DestinationActivity extends AppCompatActivity {
                 intent.putIntegerArrayListExtra("polygonCoords", destinationPolygon);
                 locationPoint = getIntent().getIntegerArrayListExtra("coords");
                 intent.putIntegerArrayListExtra("pointCoords", locationPoint);
+                intent.putExtra("urlCoords", url);
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(), "You select your destination successfully", Toast.LENGTH_SHORT).show();
             }

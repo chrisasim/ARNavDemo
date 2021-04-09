@@ -9,6 +9,7 @@ public class ShowCoordinates extends AppCompatActivity {
 
     private TextView polygon;
     private TextView point;
+    private TextView url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,8 +18,12 @@ public class ShowCoordinates extends AppCompatActivity {
 
         polygon = findViewById(R.id.txtPolygonCoords);
         point = findViewById(R.id.txtPointCoords);
+        url = findViewById(R.id.txtUrl);
+
 
         polygon.setText("Your destination keeps in polygon with coords: " + String.valueOf(getIntent().getIntegerArrayListExtra("polygonCoords")));
         point.setText("Your current location is found: " + String.valueOf(getIntent().getIntegerArrayListExtra("pointCoords")));
+        url.setText("Your current location from qr code is found: " + getIntent().getStringExtra("urlCoords"));
+
     }
 }
