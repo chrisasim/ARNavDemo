@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".DestinationActivity">
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:paddingLeft="20dp"
+        android:paddingTop="15dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="35dp"
+        android:text="@string/txt_destination"
+        android:textColor="#000000"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:drawableEndCompat="@android:drawable/ic_menu_search"
+        app:drawableTint="#EA0F0F" />
+
+    <TextView
+        android:id="@+id/textView6"
+        style="@style/select_destination_txt"
+        android:text="@string/txt_room_number" />
+
+    <EditText
+        android:id="@+id/txtenterOfficeId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/office_id_hint_text"
+        android:inputType="textPersonName"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:imeOptions="actionDone"/>
+
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#5CEA0F0F"
+        android:inputType="textCapCharacters"
+        android:textColor="#B21B1414"
+        android:textSize="18sp"
+        android:text="@string/submit"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/textView7"
+        style="@style/select_destination_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="30dp"
+        android:paddingBottom="15dp"
+        android:text="@string/find_by_name_txt" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnGraduateStudentOfficeA1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest1"
+                style="@style/destinationMenuStyle" />
+
+            <Button
+                android:id="@+id/btnBlekasOffice"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest2" />
+
+            <Button
+                android:id="@+id/btnVlachosOffice"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest3" />
+
+            <Button
+                android:id="@+id/btnLykasOffice"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest4" />
+
+            <Button
+                android:id="@+id/btnGraduateStudentOfficeA5"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest5" />
+
+            <Button
+                android:id="@+id/btnGraduateStudentOfficeA6"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest6" />
+
+            <Button
+                android:id="@+id/btnZarrasOffice"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest7" />
+
+            <Button
+                android:id="@+id/btnPolenakisOffice"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest8" />
+
+            <Button
+                android:id="@+id/btnMamoulisOffice"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest9" />
+
+            <Button
+                android:id="@+id/btnGraduateStudentOfficeA10"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest10" />
+
+            <Button
+                android:id="@+id/btnSecretariat"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest11" />
+
+            <Button
+                android:id="@+id/btnLaboratory"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest12" />
+
+            <Button
+                android:id="@+id/btnTelecommunicationsLaboratory"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest13" />
+
+            <Button
+                android:id="@+id/btnEdipMembers"
+                style="@style/destinationMenuStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dest14" />
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

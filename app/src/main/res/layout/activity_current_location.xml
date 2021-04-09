@@ -2,12 +2,12 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="#000000"
     android:backgroundTint="#000000"
     android:orientation="vertical"
-    tools:context=".CurrentLocation">
+    tools:context=".CurrentLocationActivity">
 
     <TextView
         android:id="@+id/textView3"
@@ -18,57 +18,132 @@
         android:paddingBottom="20dp"
         android:text="@string/choose_location_text" />
 
-    <Button
-        android:id="@+id/buttonEntrance"
-        style="@style/buttonLocationStyle"
-        android:text="@string/main_entrance_button" />
-
-    <Button
-        android:id="@+id/mamoulisButton"
-        style="@style/buttonLocationStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/mamoulis_office_button" />
-
-    <Button
-        android:id="@+id/lykasButton"
-        style="@style/buttonLocationStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/lykas_office_button" />
-
-    <Button
-        android:id="@+id/secretariatButton"
-        style="@style/buttonLocationStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/secretariat_button" />
-
-    <Button
-        android:id="@+id/laboratoryButton"
-        style="@style/buttonLocationStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/laboratory_button" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:paddingBottom="20dp">
 
-        <Button
-            android:id="@+id/qrCodeButton"
-            android:layout_width="137dp"
-            android:layout_height="44dp"
-            android:backgroundTint="#0D26AF"
-            android:inputType="textCapCharacters"
-            android:text="@string/qr_code_button"
-            app:icon="@android:drawable/ic_menu_camera"
-            app:iconGravity="textEnd"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.498" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnEntrance"
+                style="@style/buttonLocationStyle"
+                android:text="@string/main_entrance_button" />
+
+            <Button
+                android:id="@+id/btnMamoulisOffice"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mamoulis_office_button" />
+
+            <Button
+                android:id="@+id/btnLykasOffice"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lykas_office_button" />
+
+            <Button
+                android:id="@+id/btnSecretariat"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/secretariat_button" />
+
+            <Button
+                android:id="@+id/btnLaboratory"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/laboratory_button" />
+
+            <Button
+                android:id="@+id/btnTelecommunicationsLaboratory"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/telecommunicationsButton" />
+
+            <Button
+                android:id="@+id/btnGraduateStudentOfficeA1"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/A1OfficeButton" />
+
+            <Button
+                android:id="@+id/btnBlekasOffice"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/A2Office" />
+
+            <Button
+                android:id="@+id/btnVlachosOffice"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/A3Office" />
+
+            <Button
+                android:id="@+id/btnGraduateStudentOfficeA5"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/A5office" />
+
+            <Button
+                android:id="@+id/btnGraduateStudentOfficeA6"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/A6Office" />
+
+            <Button
+                android:id="@+id/btnZarrasOffice"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/A7office" />
+
+            <Button
+                android:id="@+id/btnPolenakisOffice"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/A8Office" />
+
+            <Button
+                android:id="@+id/btnGraduateStudentOfficeA10"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/A10Office" />
+
+            <Button
+                android:id="@+id/btnEdipMembers"
+                style="@style/buttonLocationStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edidOffice" />
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/qrCodeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="#0D26AF"
+        android:inputType="textCapCharacters"
+        android:text="@string/qr_code_button"
+        app:icon="@android:drawable/ic_menu_camera"
+        app:iconGravity="textEnd" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -3,4 +3,6 @@
     <dimen name="margin_layout">6dp</dimen>
     <dimen name="icon_size">10dp</dimen>
     <dimen name="button_size">10dp</dimen>
+    <dimen name="activity_horizontal_margin">10dp</dimen>
+    <dimen name="lestter_space">8dp</dimen>
 </resources>

@@ -1,20 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">ARNav Demo</string>
     <string name="welcome_text">welcome to AR Navigator</string>
-    <string name="app_info">This app is craeted as a demostration
+    <string name="app_info">This app is created as a demostration
         showing the power of Beacon technology and Augmented Reality.
         \n\nThis app provides a tested and fully functional navigation
-        in AR inside my departement at University of Ioannina.</string>
+        in AR inside my department at University of Ioannina.</string>
     <string name="continue_button">Continue</string>
     <string name="how_it_works_text">How it works?</string>
     <string name="guides_for_app" tools:ignore="StringEscaping">1.When the user launches the app, they will be prompted
-        to scan the QR code used to download the app. This is needed to immediately set their
+        to select their position from a predefined list. The list consists of all rooms in the space, where the appication
+        will be tested.\n\n2.Alternatively, the user can scan the QR code used to download the app. This is needed to immediately set their
         position in the virtual world. Using such QR code is the most convenient way to ensure
-        the accuracy of the user position.\n\n2.After the initial position is set, the app
+        the accuracy of the user position.\n\n3.After the initial position is set, the app
         starts the ARsesion. Now the app and its minimap will react to user movements
-        seamlessly using visual-inertial odometry provided by ARCore.\n\n3.The user can choose
+        seamlessly using visual-inertial odometry provided by ARCore.\n\n4.The user can choose
         a destination point from a predefined menu or enter it manually. The app searches
-        for a vertex with the given ID and marks it as a destination point.\n\n4.The navigation
+        for a vertex with the given ID and marks it as a destination point.\n\n5.The navigation
         path from the user current location to the destination point will be calculated in
         real-time and displayed as a spline with animated arrows.</string>
     <string name="start_demo_button">Start Demo</string>
@@ -25,4 +26,35 @@
     <string name="secretariat_button">Secretariat</string>
     <string name="laboratory_button">Laboratory</string>
     <string name="qr_code_button">QR Code</string>
+    <string name="txt_scan_qr_code">Scan the QR code</string>
+    <string name="txt_destination">Select Destination</string>
+    <string name="txt_room_number">Find By Office Id:</string>
+    <string name="txt_enter_office_id">Enter office id...</string>
+    <string name="office_id_hint_text">Enter office id (A.1-A.14)</string>
+    <string name="find_by_name_txt">Find By Name:</string>
+    <string name="dest1">Graduate Student office (A.1)</string>
+    <string name="dest2">Mr. Blekas\'s office</string>
+    <string name="dest3">Mr. Vlacho\'s ofiice</string>
+    <string name="dest4">Mr. Lyka\'s office</string>
+    <string name="dest5">Graduate Student office (A.5)</string>
+    <string name="dest6">Graduate Student office (A.6)</string>
+    <string name="dest7">Mr. Zarra\'s office</string>
+    <string name="dest8">Mr. Polenaki\'s office</string>
+    <string name="dest9">Mr. Mamouli\'s office</string>
+    <string name="dest10">Graduate Student office (A.10)</string>
+    <string name="dest11">Secretariat office</string>
+    <string name="dest12">Laboratory</string>
+    <string name="dest13">Telecommunications laboratory</string>
+    <string name="dest14">EDIP members</string>
+    <string name="telecommunicationsButton">Telecommunications laboratory</string>
+    <string name="A1OfficeButton">Graduate Student office(A.1)</string>
+    <string name="A2Office">Mr. Bleka\'s office</string>
+    <string name="A3Office">Mr. Vlacho\'s office</string>
+    <string name="A5office">Graduate Student office (A.5)</string>
+    <string name="A6Office">Graduate Student office (A.6)</string>
+    <string name="A7office">Mr. Zarra\'s office</string>
+    <string name="A8Office">Mr. Polenaki\'s office</string>
+    <string name="A10Office">Graduate Student office (A.10)</string>
+    <string name="edidOffice">EDIP members</string>
+    <string name="submit">Submit</string>
 </resources>

@@ -21,7 +21,7 @@ public class ExplanationApp extends AppCompatActivity {
         startDemo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ExplanationApp.this, CurrentLocation.class);
+                Intent intent = new Intent(ExplanationApp.this, CurrentLocationActivity.class);
                 startActivity(intent);
             }
         });

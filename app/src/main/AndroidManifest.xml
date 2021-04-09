@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.arnavdemo">
 
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ARNavDemo">
-        <activity android:name=".CurrentLocation"></activity>
+        <activity android:name=".ShowCoordinates"></activity>
+        <activity android:name=".DestinationActivity" />
+        <activity android:name=".ScannedBarcodeActivity" />
+        <activity android:name=".CurrentLocationActivity" />
         <activity android:name=".ExplanationApp" />
         <activity android:name=".WelcomeActivity">
             <intent-filter>
@@ -31,8 +35,6 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
-
     </application>
 
 </manifest>
