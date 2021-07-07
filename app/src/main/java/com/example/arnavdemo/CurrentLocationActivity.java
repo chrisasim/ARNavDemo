@@ -6,10 +6,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.arnavdemo.mapping.Location;
 import com.example.arnavdemo.mapping.LocationFactory;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 
@@ -101,7 +104,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
         clickButton(btnEdipMembers, "edipMembers");
     }
 
-      private void clickButton(Button locationButton, String location) {
+    private void clickButton(Button locationButton, String location) {
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
