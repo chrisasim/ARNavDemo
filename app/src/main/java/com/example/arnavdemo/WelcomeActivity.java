@@ -8,14 +8,13 @@ import android.view.View;
 import android.widget.Button;
 
 public class WelcomeActivity extends AppCompatActivity {
-    private Button btnContinue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        btnContinue = findViewById(R.id.continue_button);
+        Button btnContinue = findViewById(R.id.continue_button);
 
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override

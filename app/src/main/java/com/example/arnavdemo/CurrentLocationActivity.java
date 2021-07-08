@@ -18,47 +18,29 @@ import java.util.ArrayList;
 
 public class CurrentLocationActivity extends AppCompatActivity {
 
-    private Button btnScanBarcode;
-    private Button btnEntrance;
-    private Button btnGraduateStudentOfficeA1;
-    private Button btnBlekasOffice;
-    private Button btnVlachosOffice;
-    private Button btnLykasOffice;
-    private Button btnGraduateStudentOfficeA5;
-    private Button btnGraduateStudentOfficeA6;
-    private Button btnZarrasOffice;
-    private Button btnPolenakisOffice;
-    private Button btnMamoulisOffice;
-    private Button btnGraduateStudentOfficeA10;
-    private Button btnSecretariat;
-    private Button btnLaboratory;
-    private Button btnTelecommunicationsLaboratory;
-    private Button btnEdipMembers;
     private ArrayList<Integer> coordinates;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_current_location);
 
-        btnScanBarcode =findViewById(R.id.qrCodeButton);
-        btnEntrance = findViewById((R.id.btnEntrance));
-        btnGraduateStudentOfficeA1 = findViewById(R.id.btnGraduateStudentOfficeA1);
-        btnBlekasOffice = findViewById(R.id.btnBlekasOffice);
-        btnVlachosOffice = findViewById(R.id.btnVlachosOffice);
-        btnLykasOffice = findViewById(R.id.btnLykasOffice);
-        btnGraduateStudentOfficeA5 =findViewById(R.id.btnGraduateStudentOfficeA5);
-        btnGraduateStudentOfficeA6 = findViewById((R.id.btnGraduateStudentOfficeA6));
-        btnZarrasOffice = findViewById(R.id.btnZarrasOffice);
-        btnPolenakisOffice = findViewById(R.id.btnPolenakisOffice);
-        btnMamoulisOffice = findViewById(R.id.btnMamoulisOffice);
-        btnGraduateStudentOfficeA10 = findViewById(R.id.btnGraduateStudentOfficeA10);
-        btnSecretariat = findViewById(R.id.btnSecretariat);
-        btnLaboratory = findViewById(R.id.btnLaboratory);
-        btnTelecommunicationsLaboratory = findViewById(R.id.btnTelecommunicationsLaboratory);
-        btnEdipMembers = findViewById(R.id.btnEdipMembers);
+        Button btnScanBarcode = findViewById(R.id.qrCodeButton);
+        Button btnEntrance = findViewById((R.id.btnEntrance));
+        Button btnGraduateStudentOfficeA1 = findViewById(R.id.btnGraduateStudentOfficeA1);
+        Button btnBlekasOffice = findViewById(R.id.btnBlekasOffice);
+        Button btnVlachosOffice = findViewById(R.id.btnVlachosOffice);
+        Button btnLykasOffice = findViewById(R.id.btnLykasOffice);
+        Button btnGraduateStudentOfficeA5 = findViewById(R.id.btnGraduateStudentOfficeA5);
+        Button btnGraduateStudentOfficeA6 = findViewById((R.id.btnGraduateStudentOfficeA6));
+        Button btnZarrasOffice = findViewById(R.id.btnZarrasOffice);
+        Button btnPolenakisOffice = findViewById(R.id.btnPolenakisOffice);
+        Button btnMamoulisOffice = findViewById(R.id.btnMamoulisOffice);
+        Button btnGraduateStudentOfficeA10 = findViewById(R.id.btnGraduateStudentOfficeA10);
+        Button btnSecretariat = findViewById(R.id.btnSecretariat);
+        Button btnLaboratory = findViewById(R.id.btnLaboratory);
+        Button btnTelecommunicationsLaboratory = findViewById(R.id.btnTelecommunicationsLaboratory);
+        Button btnEdipMembers = findViewById(R.id.btnEdipMembers);
 
         btnScanBarcode.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,10 +93,10 @@ public class CurrentLocationActivity extends AppCompatActivity {
                 LocationFactory locationFactory = new LocationFactory();
                 Location point = locationFactory.getLocation("CURRENTLOCATION", location);
                 coordinates = point.getCoordinates();
-                Intent intent = new Intent(CurrentLocationActivity.this, DestinationActivity.class);
-                intent.putIntegerArrayListExtra("coords", coordinates);
-                startActivity(intent);
-                Toast.makeText(getApplicationContext(), "You set your location successfully", Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(CurrentLocationActivity.this, DestinationActivity.class);
+//                intent.putIntegerArrayListExtra("coords", coordinates);
+//                startActivity(intent);
+//                Toast.makeText(getApplicationContext(), "You set your location successfully", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -131,13 +113,13 @@ public class CurrentLocationActivity extends AppCompatActivity {
             }
             else
             {
-                //
+
                 Intent intent = new Intent(CurrentLocationActivity.this, DestinationActivity.class);
                 intent.putIntegerArrayListExtra("coords", coordinates);
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(), "You set your location successfully", Toast.LENGTH_SHORT).show();
-                Toast.makeText(getApplicationContext(), String.valueOf(result.getFormatName()), Toast.LENGTH_SHORT);
-                Toast.makeText(getApplicationContext(), String.valueOf(result.getContents()), Toast.LENGTH_SHORT);
+                Toast.makeText(getApplicationContext(), String.valueOf(result.getFormatName()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), String.valueOf(result.getContents()), Toast.LENGTH_SHORT).show();
             }
         }
         else

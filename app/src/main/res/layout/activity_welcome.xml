@@ -10,13 +10,13 @@
     tools:context=".WelcomeActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/welcome_title_text"
         style="@style/textStyleUp"
         android:paddingTop="115dp"
         android:text="@string/welcome_text" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/welcome_text"
         style="@style/textStyleDown"
         android:paddingTop="90dp"
         android:text="@string/app_info" />

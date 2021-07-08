@@ -1,19 +1,15 @@
 package com.example.arnavdemo;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.arnavdemo.mapping.DestinationFromId;
 import com.example.arnavdemo.mapping.Location;
@@ -27,22 +23,6 @@ public class DestinationActivity extends AppCompatActivity {
     private String url;
     private ArrayList<Integer> destinationPolygon = new ArrayList<>();
 
-    private Button btnGraduateStudentOfficeA1;
-    private Button btnBlekasOffice;
-    private Button btnVlachosOffice;
-    private Button btnLykasOffice;
-    private Button btnGraduateStudentOfficeA5;
-    private Button btnGraduateStudentOfficeA6;
-    private Button btnZarrasOffice;
-    private Button btnPolenakisOffice;
-    private Button btnMamoulisOffice;
-    private Button btnGraduateStudentOfficeA10;
-    private Button btnSecretariat;
-    private Button btnLaboratory;
-    private Button btnTelecommunicationsLaboratory;
-    private Button btnEdipMembers;
-    private Button submit;
-
     private EditText enterOfficeId;
 
     @Override
@@ -55,7 +35,7 @@ public class DestinationActivity extends AppCompatActivity {
 
         url = getIntent().getStringExtra("url");
         enterOfficeId = findViewById(R.id.txtenterOfficeId);
-        submit = findViewById(R.id.btnSubmit);
+        Button submit = findViewById(R.id.btnSubmit);
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,20 +68,20 @@ public class DestinationActivity extends AppCompatActivity {
         });
 
 
-        btnGraduateStudentOfficeA1 = findViewById(R.id.btnGraduateStudentOfficeA1);
-        btnBlekasOffice = findViewById(R.id.btnBlekasOffice);
-        btnVlachosOffice = findViewById(R.id.btnVlachosOffice);
-        btnLykasOffice = findViewById(R.id.btnLykasOffice);
-        btnGraduateStudentOfficeA5 =findViewById(R.id.btnGraduateStudentOfficeA5);
-        btnGraduateStudentOfficeA6 = findViewById((R.id.btnGraduateStudentOfficeA6));
-        btnZarrasOffice = findViewById(R.id.btnZarrasOffice);
-        btnPolenakisOffice = findViewById(R.id.btnPolenakisOffice);
-        btnMamoulisOffice = findViewById(R.id.btnMamoulisOffice);
-        btnGraduateStudentOfficeA10 = findViewById(R.id.btnGraduateStudentOfficeA10);
-        btnSecretariat = findViewById(R.id.btnSecretariat);
-        btnLaboratory = findViewById(R.id.btnLaboratory);
-        btnTelecommunicationsLaboratory = findViewById(R.id.btnTelecommunicationsLaboratory);
-        btnEdipMembers = findViewById(R.id.btnEdipMembers);
+        Button btnGraduateStudentOfficeA1 = findViewById(R.id.btnGraduateStudentOfficeA1);
+        Button btnBlekasOffice = findViewById(R.id.btnBlekasOffice);
+        Button btnVlachosOffice = findViewById(R.id.btnVlachosOffice);
+        Button btnLykasOffice = findViewById(R.id.btnLykasOffice);
+        Button btnGraduateStudentOfficeA5 = findViewById(R.id.btnGraduateStudentOfficeA5);
+        Button btnGraduateStudentOfficeA6 = findViewById((R.id.btnGraduateStudentOfficeA6));
+        Button btnZarrasOffice = findViewById(R.id.btnZarrasOffice);
+        Button btnPolenakisOffice = findViewById(R.id.btnPolenakisOffice);
+        Button btnMamoulisOffice = findViewById(R.id.btnMamoulisOffice);
+        Button btnGraduateStudentOfficeA10 = findViewById(R.id.btnGraduateStudentOfficeA10);
+        Button btnSecretariat = findViewById(R.id.btnSecretariat);
+        Button btnLaboratory = findViewById(R.id.btnLaboratory);
+        Button btnTelecommunicationsLaboratory = findViewById(R.id.btnTelecommunicationsLaboratory);
+        Button btnEdipMembers = findViewById(R.id.btnEdipMembers);
 
 
         clickButton(btnGraduateStudentOfficeA1, "graduateStudentOfficeA1");

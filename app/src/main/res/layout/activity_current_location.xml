@@ -10,7 +10,7 @@
     tools:context=".CurrentLocationActivity">
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/currentLocation_title"
         style="@style/textStyleUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

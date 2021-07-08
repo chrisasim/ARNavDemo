@@ -24,6 +24,8 @@ public class DestinationFromId {
                 coords.add(341);
                 coords.add(182);
                 coords.add(340);
+                coords.add(230);
+                coords.add(286);
                 return coords;
             case "A.2":
                 coords.add(294);
@@ -34,6 +36,8 @@ public class DestinationFromId {
                 coords.add(337);
                 coords.add(299);
                 coords.add(335);
+                coords.add(323);
+                coords.add(285);
                 return coords;
             case "A.3":
                 coords.add(362);
@@ -44,6 +48,8 @@ public class DestinationFromId {
                 coords.add(338);
                 coords.add(364);
                 coords.add(338);
+                coords.add(392);
+                coords.add(296);
                 return coords;
             case "A.4":
                 coords.add(431);
@@ -54,6 +60,8 @@ public class DestinationFromId {
                 coords.add(337);
                 coords.add(435);
                 coords.add(336);
+                coords.add(462);
+                coords.add(291);
                 return coords;
             case "A.5":
                 coords.add(503);
@@ -64,6 +72,8 @@ public class DestinationFromId {
                 coords.add(338);
                 coords.add(509);
                 coords.add(333);
+                coords.add(559);
+                coords.add(293);
                 return coords;
             case "A.6":
                 coords.add(719);
@@ -74,6 +84,8 @@ public class DestinationFromId {
                 coords.add(333);
                 coords.add(723);
                 coords.add(333);
+                coords.add(775);
+                coords.add(292);
                 return coords;
             case "A.7":
                 coords.add(835);
@@ -84,6 +96,8 @@ public class DestinationFromId {
                 coords.add(342);
                 coords.add(838);
                 coords.add(336);
+                coords.add(860);
+                coords.add(283);
                 return coords;
             case "A.8":
                 coords.add(903);
@@ -94,6 +108,8 @@ public class DestinationFromId {
                 coords.add(338);
                 coords.add(902);
                 coords.add(338);
+                coords.add(930);
+                coords.add(294);
                 return coords;
             case "A.9":
                 coords.add(967);
@@ -104,6 +120,8 @@ public class DestinationFromId {
                 coords.add(337);
                 coords.add(969);
                 coords.add(336);
+                coords.add(998);
+                coords.add(293);
                 return coords;
             case "A.10":
                 coords.add(1042);
@@ -114,6 +132,8 @@ public class DestinationFromId {
                 coords.add(335);
                 coords.add(1041);
                 coords.add(331);
+                coords.add(1086);
+                coords.add(291);
                 return coords;
             case "A.11":
                 coords.add(180);
@@ -124,6 +144,8 @@ public class DestinationFromId {
                 coords.add(130);
                 coords.add(186);
                 coords.add(138);
+                coords.add(230);
+                coords.add(76);
                 return coords;
             case "A.12":
                 coords.add(311);
@@ -134,6 +156,8 @@ public class DestinationFromId {
                 coords.add(150);
                 coords.add(299);
                 coords.add(157);
+                coords.add(429);
+                coords.add(91);
                 return coords;
             case "A.13":
                 coords.add(732);
@@ -144,6 +168,8 @@ public class DestinationFromId {
                 coords.add(159);
                 coords.add(806);
                 coords.add(144);
+                coords.add(915);
+                coords.add(72);
                 return coords;
             case "A.14":
                 coords.add(1065);
@@ -154,6 +180,8 @@ public class DestinationFromId {
                 coords.add(140);
                 coords.add(1065);
                 coords.add(143);
+                coords.add(1101);
+                coords.add(74);
                 return coords;
             default:
                 return null;

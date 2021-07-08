@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 
 public class ExplanationApp extends AppCompatActivity {
-    private Button startDemo;
 
 
     @Override
@@ -16,7 +15,7 @@ public class ExplanationApp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explanation_app);
 
-        startDemo = findViewById(R.id.startDemoButton);
+        Button startDemo = findViewById(R.id.start_demo_button);
 
         startDemo.setOnClickListener(new View.OnClickListener() {
             @Override
