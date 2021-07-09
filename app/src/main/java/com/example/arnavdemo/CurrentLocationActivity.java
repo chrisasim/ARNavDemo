@@ -93,10 +93,10 @@ public class CurrentLocationActivity extends AppCompatActivity {
                 LocationFactory locationFactory = new LocationFactory();
                 Location point = locationFactory.getLocation("CURRENTLOCATION", location);
                 coordinates = point.getCoordinates();
-//                Intent intent = new Intent(CurrentLocationActivity.this, DestinationActivity.class);
-//                intent.putIntegerArrayListExtra("coords", coordinates);
-//                startActivity(intent);
-//                Toast.makeText(getApplicationContext(), "You set your location successfully", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(CurrentLocationActivity.this, DestinationActivity.class);
+                intent.putIntegerArrayListExtra("coords", coordinates);
+                startActivity(intent);
+                Toast.makeText(getApplicationContext(), "You set your location successfully", Toast.LENGTH_SHORT).show();
             }
         });
     }

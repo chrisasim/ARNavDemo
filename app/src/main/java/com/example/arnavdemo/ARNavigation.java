@@ -5,20 +5,60 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.widget.Toast;
+
+import com.google.ar.core.Anchor;
+import com.google.ar.core.HitResult;
+import com.google.ar.core.Plane;
+import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.ux.ArFragment;
+import com.google.ar.sceneform.ux.TransformableNode;
 
 public class ARNavigation extends AppCompatActivity {
 
-    private static final String TAG = "Sceneform Service";
+    private static final String TAG = MainActivity.class.getSimpleName();
     private static final double MIN_OPENGL_VERSION = 3.0;
 
+    ArFragment arFragment;
+    ModelRenderable modelRenderable;
+
     @Override
+    @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!checkIsSupportedDeviceOrFinish(this)) {
+            return;
+        }
         setContentView(R.layout.activity_arnavigation);
+        arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
+
+        ModelRenderable.builder().setSource(this, Uri.parse("model.sfb")).build().thenAccept(renderable -> modelRenderable = renderable).exceptionally(throwable -> {
+            Toast toast = Toast.makeText(this, "Unable to load andy renderable", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+            return null;
+        });
+
+        arFragment.setOnTapArPlaneListener((HitResult hitresult, Plane plane, MotionEvent motionevent) -> {
+            if (modelRenderable == null){
+                return;
+            }
+            Anchor anchor = hitresult.createAnchor();
+            AnchorNode anchorNode = new AnchorNode(anchor);
+            anchorNode.setParent(arFragment.getArSceneView().getScene());
+            TransformableNode raw = new TransformableNode(arFragment.getTransformationSystem());
+            raw.setParent(anchorNode);
+            raw.setRenderable(modelRenderable);
+            raw.select();
+        });
 
     }
 
@@ -39,5 +79,9 @@ public class ARNavigation extends AppCompatActivity {
         }
         return true;
     }
+
+
+
+
 
 }

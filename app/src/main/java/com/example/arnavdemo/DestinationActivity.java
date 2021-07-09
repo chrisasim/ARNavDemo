@@ -50,7 +50,7 @@ public class DestinationActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "No validate office id", Toast.LENGTH_SHORT).show();
                     }
                     else {
-                        Intent intent = new Intent(DestinationActivity.this, ShowCoordinates.class);
+                        Intent intent = new Intent(DestinationActivity.this, ARNavigation.class);
                         intent.putIntegerArrayListExtra("polygonCoords", destinationPolygon);
                         locationPoint = getIntent().getIntegerArrayListExtra("coords");
                         intent.putIntegerArrayListExtra("pointCoords", locationPoint);
@@ -120,7 +120,7 @@ public class DestinationActivity extends AppCompatActivity {
                 LocationFactory locationFactory = new LocationFactory();
                 Location polygon = locationFactory.getLocation("DESTINATION", destination);
                 destinationPolygon = polygon.getCoordinates();
-                Intent intent = new Intent(DestinationActivity.this, ShowCoordinates.class);
+                Intent intent = new Intent(DestinationActivity.this, ARNavigation.class);
                 intent.putIntegerArrayListExtra("polygonCoords", destinationPolygon);
                 locationPoint = getIntent().getIntegerArrayListExtra("coords");
                 intent.putIntegerArrayListExtra("pointCoords", locationPoint);
