@@ -87,7 +87,7 @@ public class ARNavigation extends AppCompatActivity {
 
                     // Set the local scale of the node BEFORE setting its parent
                     mARObject.setLocalScale(new Vector3(0.2f, 0.2f, 0.2f));
-                    
+
                     mARObject.setParent(mAnchorNode);
                     mARObject.setRenderable(mObjRenderable);
                     mARObject.select();

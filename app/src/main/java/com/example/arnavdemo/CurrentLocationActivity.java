@@ -51,7 +51,6 @@ public class CurrentLocationActivity extends AppCompatActivity {
                 integrator.setBeepEnabled(true);
                 integrator.setBarcodeImageEnabled(true);
                 integrator.initiateScan();
-                //startActivity(new Intent(CurrentLocationActivity.this, ScannedBarcodeActivity.class));
             }
         });
 

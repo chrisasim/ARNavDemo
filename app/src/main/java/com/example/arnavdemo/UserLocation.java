@@ -1,32 +1,15 @@
 package com.example.arnavdemo;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
-import android.Manifest;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.ar.core.ArCoreApk;
-import com.google.ar.core.Session;
-import com.google.ar.core.exceptions.UnavailableApkTooOldException;
-import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
-import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException;
-import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
-import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
@@ -44,15 +27,9 @@ import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import static com.google.ar.core.ArCoreApk.InstallStatus.INSTALL_REQUESTED;
+public class UserLocation extends AppCompatActivity {
 
-public class ShowCoordinates extends AppCompatActivity {
-
-//    private TextView polygon;
-//    private TextView point;
-//    private TextView url;
 
     //beacon Service
     private FirebaseFirestore fStore;
@@ -66,8 +43,6 @@ public class ShowCoordinates extends AppCompatActivity {
     double[][] positions = new double[][]{{390, 182},{664,218},{929,181}};
     public BeaconService beaconService;
     private boolean mUserRequestedInstall = true;
-//    private Object CameraPermissionHelper;
-    private static final int MY_CAMERA_REQUEST_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,17 +50,8 @@ public class ShowCoordinates extends AppCompatActivity {
         setContentView(R.layout.activity_show_coordinates);
         onResume();
 
-//        polygon = findViewById(R.id.txtPolygonCoords);
-//        point = findViewById(R.id.txtPointCoords);
-//        url = findViewById(R.id.txtUrl);
-
         fStore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
-
-
-//        polygon.setText("Your destination keeps in polygon with coords: " + String.valueOf(getIntent().getIntegerArrayListExtra("polygonCoords")));
-//        point.setText("Your current location is found: " + String.valueOf(getIntent().getIntegerArrayListExtra("pointCoords")));
-//        url.setText("Your current location from qr code is found: " + getIntent().getStringExtra("urlCoords"));
 
     }
 
@@ -108,7 +74,7 @@ public class ShowCoordinates extends AppCompatActivity {
             @Override
             public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException error) {
                 if (error != null) {
-                    Toast.makeText(ShowCoordinates.this, "Error while loading!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UserLocation.this, "Error while loading!", Toast.LENGTH_SHORT).show();
 
                 } else {
                     for (DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
@@ -141,56 +107,4 @@ public class ShowCoordinates extends AppCompatActivity {
         });
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // ARCore requires camera permission to operate.
-        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
-        }
-
-
-        // Make sure Google Play Services for AR is installed and up to date.
-        try {
-            Session mSession = null;
-            if (mSession == null) {
-                switch (ArCoreApk.getInstance().requestInstall(this, mUserRequestedInstall)) {
-                    case INSTALLED:
-                        // Success, create the AR session.
-                        mSession = new Session(this);
-                        break;
-                    case INSTALL_REQUESTED:
-                        // Ensures next invocation of requestInstall() will either return
-                        // INSTALLED or throw an exception.
-                        mUserRequestedInstall = false;
-                        return;
-                }
-            }
-        } catch (UnavailableUserDeclinedInstallationException | UnavailableDeviceNotCompatibleException e) {
-            // Display an appropriate message to the user and return gracefully.
-            Toast.makeText(this, "TODO: handle exception " + e, Toast.LENGTH_LONG)
-                    .show();
-            return;
-        } catch (UnavailableArcoreNotInstalledException e) {
-            e.printStackTrace();
-        } catch (UnavailableSdkTooOldException e) {
-            e.printStackTrace();
-        } catch (UnavailableApkTooOldException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == MY_CAMERA_REQUEST_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
 }

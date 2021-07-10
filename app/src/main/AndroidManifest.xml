@@ -25,7 +25,7 @@
         android:hardwareAccelerated="true"
         android:theme="@style/Theme.ARNavDemo">
         <activity android:name=".ARNavigation" />
-        <activity android:name=".ShowCoordinates" />
+        <activity android:name=".UserLocation" />
         <activity android:name=".DestinationActivity" />
         <activity android:name=".ScannedBarcodeActivity" />
         <activity android:name=".CurrentLocationActivity" />
