@@ -18,6 +18,7 @@ import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -78,6 +79,15 @@ public class ARNavigation extends AppCompatActivity {
 
                     // Create the transformable object and add it to the anchor.
                     mARObject = new TransformableNode(mARFragment.getTransformationSystem());
+
+                    // Set the min and max scales of the ScaleController.
+                    // Default min is 0.75, default max is 1.75.
+                    mARObject.getScaleController().setMinScale(0.1f);
+                    mARObject.getScaleController().setMaxScale(2.0f);
+
+                    // Set the local scale of the node BEFORE setting its parent
+                    mARObject.setLocalScale(new Vector3(0.2f, 0.2f, 0.2f));
+                    
                     mARObject.setParent(mAnchorNode);
                     mARObject.setRenderable(mObjRenderable);
                     mARObject.select();
