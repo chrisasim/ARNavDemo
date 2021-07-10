@@ -17,6 +17,7 @@ import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -26,40 +27,61 @@ public class ARNavigation extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final double MIN_OPENGL_VERSION = 3.0;
 
-    ArFragment arFragment;
-    ModelRenderable modelRenderable;
+
+    private ArFragment mARFragment;
+    private ModelRenderable mObjRenderable;
+    private Anchor mAnchor = null;
+    private TransformableNode mARObject = null;
+    private AnchorNode mAnchorNode = null;
 
     @Override
-    @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (!checkIsSupportedDeviceOrFinish(this)) {
             return;
         }
         setContentView(R.layout.activity_arnavigation);
-        arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
+        setARFragment();
+    }
 
-        ModelRenderable.builder().setSource(this, Uri.parse("model.sfb")).build().thenAccept(renderable -> modelRenderable = renderable).exceptionally(throwable -> {
-            Toast toast = Toast.makeText(this, "Unable to load andy renderable", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
-            return null;
-        });
+    private void setARFragment() {
+        mARFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
+        // When you build a Renderable, Sceneform loads its resources in the background while returning
+        // a CompletableFuture. Call thenAccept(), handle(), or check isDone() before calling get().
 
-        arFragment.setOnTapArPlaneListener((HitResult hitresult, Plane plane, MotionEvent motionevent) -> {
-            if (modelRenderable == null){
-                return;
-            }
-            Anchor anchor = hitresult.createAnchor();
-            AnchorNode anchorNode = new AnchorNode(anchor);
-            anchorNode.setParent(arFragment.getArSceneView().getScene());
-            TransformableNode raw = new TransformableNode(arFragment.getTransformationSystem());
-            raw.setParent(anchorNode);
-            raw.setRenderable(modelRenderable);
-            raw.select();
-        });
+        ModelRenderable.builder()
+                .setSource(this, Uri.parse("model.sfb"))
+                .build()
+                .thenAccept(renderable -> mObjRenderable = renderable)
+                .exceptionally(
+                        throwable -> {
+                            Toast toast = Toast.makeText(this, "Unable to load obj renderable", Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        });
 
+        Node node = new Node();
+        node.setParent(mARFragment.getArSceneView().getScene());
+        node.setRenderable(mObjRenderable);
+
+        mARFragment.setOnTapArPlaneListener(
+                (HitResult hitResult, Plane plane, MotionEvent motionEvent) -> {
+                    if (mObjRenderable == null) {
+                        return;
+                    }
+
+                    // Create the Anchor.
+                    mAnchor = hitResult.createAnchor();
+                    mAnchorNode = new AnchorNode(mAnchor);
+                    mAnchorNode.setParent(mARFragment.getArSceneView().getScene());
+
+                    // Create the transformable object and add it to the anchor.
+                    mARObject = new TransformableNode(mARFragment.getTransformationSystem());
+                    mARObject.setParent(mAnchorNode);
+                    mARObject.setRenderable(mObjRenderable);
+                    mARObject.select();
+                });
     }
 
     public static boolean checkIsSupportedDeviceOrFinish(final Activity activity) {
@@ -70,7 +92,10 @@ public class ARNavigation extends AppCompatActivity {
             activity.finish();
             return false;
         }
-        String openGlVersionString = ((ActivityManager)activity.getSystemService(Context.ACTIVITY_SERVICE)).getDeviceConfigurationInfo().getGlEsVersion();
+        String openGlVersionString =
+                ((ActivityManager)activity.getSystemService(Context.ACTIVITY_SERVICE))
+                        .getDeviceConfigurationInfo()
+                        .getGlEsVersion();
         if (Double.parseDouble(openGlVersionString) < MIN_OPENGL_VERSION) {
             Log.e(TAG, "Sceneform requires OpenGL ES 3.0 later");
             Toast.makeText(activity, "Sceneform requires OpenGL ES 3.0 or later", Toast.LENGTH_LONG).show();
@@ -79,9 +104,5 @@ public class ARNavigation extends AppCompatActivity {
         }
         return true;
     }
-
-
-
-
 
 }
