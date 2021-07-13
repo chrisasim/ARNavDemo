@@ -12,16 +12,34 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.arnavdemo.mapping.DestinationFromId;
-import com.example.arnavdemo.mapping.Location;
-import com.example.arnavdemo.mapping.LocationFactory;
 
 import java.util.ArrayList;
 
-public class DestinationActivity extends AppCompatActivity {
+
+public class DestinationActivity extends AppCompatActivity implements View.OnClickListener {
+
+    public static final String GRADUATE_STUDENT_OFFICE_A1 = "graduateStudentOfficeA1";
+    public static final String BLEKAS_OFFICE = "blekasOffice";
+    public static final String VLACHOS_OFFICE = "vlachosOffice";
+    public static final String LYKAS_OFFICE = "lykasOffice";
+    public static final String GRADUATE_STUDENT_OFFICE_A5 = "graduateStudentOfficeA5";
+    public static final String GRADUATE_STUDENT_OFFICE_A6 = "graduateStudentOfficeA6";
+    public static final String ZARRAS_OFFICE = "zarrasOffice";
+    public static final String POLENAKIS_OFFICE = "polenakisOffice";
+    public static final String MAMOULIS_OFFICE = "mamoulisOffice";
+    public static final String GRADUATE_STUDENT_OFFICE_A10 = "graduateStudentOfficeA10";
+    public static final String SECRETARIAT = "secretariat";
+    public static final String LABORATORY = "laboratory";
+    public static final String TELECOMMUNICATIONS_LABORATORY = "telecommunicationsLaboratory";
+    public static final String EDIP_MEMBERS = "edipMembers";
+    public static final String FROM = "from";
+    public static final String COORDS_OF_CURRENT_POS = "coordsOfCurrentPos";
+    public static final String COORDS_OF_DESTINATION_ID = "coordsOfDestinationId";
+    public static final String COORDS_OF_ENTRANCE = "coordsOfEntrance";
+
 
     private ArrayList<Integer> locationPoint = new ArrayList<>();
-    private String url;
-    private ArrayList<Integer> destinationPolygon = new ArrayList<>();
+    private ArrayList<Integer> coordsOfEntrance = new ArrayList<>();
 
     private EditText enterOfficeId;
 
@@ -30,43 +48,37 @@ public class DestinationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_destination);
 
-//        locationPoint = getIntent().getIntegerArrayListExtra("coords");
-//        Log.d("coordinateX", String.valueOf(locationPoint.get(1)));
 
-        url = getIntent().getStringExtra("url");
+        coordsOfEntrance =  getIntent().getIntegerArrayListExtra(CurrentLocationActivity.COORDS_OF_ENTRANCE);
+        locationPoint =  getIntent().getIntegerArrayListExtra(CurrentLocationActivity.COORDS_OF_LOCATION);
         enterOfficeId = findViewById(R.id.txtenterOfficeId);
         Button submit = findViewById(R.id.btnSubmit);
 
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (enterOfficeId.getText().toString().isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Enter the office id", Toast.LENGTH_SHORT).show();
+        submit.setOnClickListener(v -> {
+            if (enterOfficeId.getText().toString().isEmpty()) {
+                Toast.makeText(getApplicationContext(), "Enter the office id", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                DestinationFromId destinationFromId = new DestinationFromId(enterOfficeId.getText().toString());
+                ArrayList<Integer> destinationPolygon = destinationFromId.getCoordinates();
+                if (destinationPolygon == null) {
+                    Toast.makeText(getApplicationContext(), "No validate office id", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    DestinationFromId destinationFromId = new DestinationFromId(enterOfficeId.getText().toString());
-                    destinationPolygon = destinationFromId.getCoordinates();
-                    if (destinationPolygon == null) {
-                        Toast.makeText(getApplicationContext(), "No validate office id", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        Intent intent = new Intent(DestinationActivity.this, ARNavigation.class);
-                        intent.putIntegerArrayListExtra("polygonCoords", destinationPolygon);
-                        locationPoint = getIntent().getIntegerArrayListExtra("coords");
-                        intent.putIntegerArrayListExtra("pointCoords", locationPoint);
-                        intent.putExtra("urlCoords", url);
-                        startActivity(intent);
-                        Toast.makeText(getApplicationContext(), "You select your destination successfully", Toast.LENGTH_SHORT).show();
-                    }
-
+                    Intent intent = new Intent(DestinationActivity.this, ARNavigation.class);
+                    intent.putIntegerArrayListExtra(COORDS_OF_DESTINATION_ID, destinationPolygon);
+                    intent.putIntegerArrayListExtra(COORDS_OF_CURRENT_POS, locationPoint);
+                    intent.putExtra(COORDS_OF_ENTRANCE, coordsOfEntrance);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "You select your destination successfully", Toast.LENGTH_SHORT).show();
                 }
-                //hide keyboard
-                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
             }
-        });
+            //hide keyboard
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
+        });
 
         Button btnGraduateStudentOfficeA1 = findViewById(R.id.btnGraduateStudentOfficeA1);
         Button btnBlekasOffice = findViewById(R.id.btnBlekasOffice);
@@ -82,54 +94,82 @@ public class DestinationActivity extends AppCompatActivity {
         Button btnLaboratory = findViewById(R.id.btnLaboratory);
         Button btnTelecommunicationsLaboratory = findViewById(R.id.btnTelecommunicationsLaboratory);
         Button btnEdipMembers = findViewById(R.id.btnEdipMembers);
+        btnGraduateStudentOfficeA1.setOnClickListener(this);
+        btnBlekasOffice.setOnClickListener(this);
+        btnVlachosOffice.setOnClickListener(this);
+        btnLykasOffice.setOnClickListener(this);
+        btnGraduateStudentOfficeA5.setOnClickListener(this);
+        btnGraduateStudentOfficeA6.setOnClickListener(this);
+        btnZarrasOffice.setOnClickListener(this);
+        btnPolenakisOffice.setOnClickListener(this);
+        btnMamoulisOffice.setOnClickListener(this);
+        btnGraduateStudentOfficeA10.setOnClickListener(this);
+        btnSecretariat.setOnClickListener(this);
+        btnLaboratory.setOnClickListener(this);
+        btnTelecommunicationsLaboratory.setOnClickListener(this);
+        btnEdipMembers.setOnClickListener(this);
 
-
-        clickButton(btnGraduateStudentOfficeA1, "graduateStudentOfficeA1");
-
-        clickButton(btnBlekasOffice, "blekasOffice");
-
-        clickButton(btnVlachosOffice, "vlachosOffice");
-
-        clickButton(btnLykasOffice, "lykasOffice");
-
-        clickButton(btnGraduateStudentOfficeA5, "graduateStudentOfficeA5");
-
-        clickButton(btnGraduateStudentOfficeA6, "graduateStudentOfficeA6");
-
-        clickButton(btnZarrasOffice, "zarrasOffice");
-
-        clickButton(btnPolenakisOffice, "polenakisOffice");
-
-        clickButton(btnMamoulisOffice, "mamoulisOffice");
-
-        clickButton(btnGraduateStudentOfficeA10, "graduateStudentOfficeA10");
-
-        clickButton(btnSecretariat, "secretariat");
-
-        clickButton(btnLaboratory, "laboratory");
-
-        clickButton(btnTelecommunicationsLaboratory, "telecommunicationsLaboratory");
-
-        clickButton(btnEdipMembers, "edipMembers");
     }
 
-    private void clickButton(Button destinationButton, String destination) {
-        destinationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LocationFactory locationFactory = new LocationFactory();
-                Location polygon = locationFactory.getLocation("DESTINATION", destination);
-                destinationPolygon = polygon.getCoordinates();
-                Intent intent = new Intent(DestinationActivity.this, ARNavigation.class);
-                intent.putIntegerArrayListExtra("polygonCoords", destinationPolygon);
-                locationPoint = getIntent().getIntegerArrayListExtra("coords");
-                intent.putIntegerArrayListExtra("pointCoords", locationPoint);
-                intent.putExtra("urlCoords", url);
-                startActivity(intent);
-                Toast.makeText(getApplicationContext(), "You select your destination successfully", Toast.LENGTH_SHORT).show();
-            }
-        });
 
 
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnGraduateStudentOfficeA1:
+                goToCameraActivity(GRADUATE_STUDENT_OFFICE_A1);
+                break;
+            case R.id.btnBlekasOffice:
+                goToCameraActivity(BLEKAS_OFFICE);
+                break;
+            case R.id.btnVlachosOffice:
+                goToCameraActivity(VLACHOS_OFFICE);
+                break;
+            case R.id.btnLykasOffice:
+                goToCameraActivity(LYKAS_OFFICE);
+                break;
+            case R.id.btnGraduateStudentOfficeA5:
+                goToCameraActivity(GRADUATE_STUDENT_OFFICE_A5);
+                break;
+            case R.id.btnGraduateStudentOfficeA6:
+                goToCameraActivity(GRADUATE_STUDENT_OFFICE_A6);
+                break;
+            case R.id.btnZarrasOffice:
+                goToCameraActivity(ZARRAS_OFFICE);
+                break;
+            case R.id.btnPolenakisOffice:
+                goToCameraActivity(POLENAKIS_OFFICE);
+                break;
+            case R.id.btnMamoulisOffice:
+                goToCameraActivity(MAMOULIS_OFFICE);
+                break;
+            case R.id.btnGraduateStudentOfficeA10:
+                goToCameraActivity(GRADUATE_STUDENT_OFFICE_A10);
+                break;
+            case R.id.btnSecretariat:
+                goToCameraActivity(SECRETARIAT);
+                break;
+            case R.id.btnLaboratory:
+                goToCameraActivity(LABORATORY);
+                break;
+            case R.id.btnTelecommunicationsLaboratory:
+                goToCameraActivity(TELECOMMUNICATIONS_LABORATORY);
+                break;
+            case R.id.btnEdipMembers:
+                goToCameraActivity(EDIP_MEMBERS);
+                break;
+        }
+    }
+
+
+    private void goToCameraActivity(String Section) {
+        Intent intent = new Intent(DestinationActivity.this, ARNavigation.class);
+        intent.putExtra(FROM, Section);
+        intent.putIntegerArrayListExtra(COORDS_OF_CURRENT_POS, locationPoint);
+        intent.putExtra(COORDS_OF_ENTRANCE, coordsOfEntrance);
+        startActivity(intent);
+        Toast.makeText(getApplicationContext(), "You select your destination successfully", Toast.LENGTH_SHORT).show();
     }
 }

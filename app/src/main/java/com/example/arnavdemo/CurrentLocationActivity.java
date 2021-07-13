@@ -19,6 +19,8 @@ import java.util.ArrayList;
 public class CurrentLocationActivity extends AppCompatActivity {
 
     private ArrayList<Integer> coordinates;
+    public static final String COORDS_OF_ENTRANCE = "coordsOfEntrance";
+    public static final String COORDS_OF_LOCATION = "coordsOfLocation";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +95,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
                 Location point = locationFactory.getLocation("CURRENTLOCATION", location);
                 coordinates = point.getCoordinates();
                 Intent intent = new Intent(CurrentLocationActivity.this, DestinationActivity.class);
-                intent.putIntegerArrayListExtra("coords", coordinates);
+                intent.putIntegerArrayListExtra(COORDS_OF_LOCATION, coordinates);
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(), "You set your location successfully", Toast.LENGTH_SHORT).show();
             }
@@ -114,7 +116,10 @@ public class CurrentLocationActivity extends AppCompatActivity {
             {
 
                 Intent intent = new Intent(CurrentLocationActivity.this, DestinationActivity.class);
-                intent.putIntegerArrayListExtra("coords", coordinates);
+                ArrayList<Integer> coordsOfEntrance = new ArrayList<>();
+                coordsOfEntrance.add(48);
+                coordsOfEntrance.add(190);
+                intent.putIntegerArrayListExtra(COORDS_OF_ENTRANCE, coordsOfEntrance);
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(), "You set your location successfully", Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), String.valueOf(result.getFormatName()), Toast.LENGTH_SHORT).show();

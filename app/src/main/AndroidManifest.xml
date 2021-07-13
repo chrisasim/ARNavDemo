@@ -27,7 +27,6 @@
         <activity android:name=".ARNavigation" />
         <activity android:name=".UserLocation" />
         <activity android:name=".DestinationActivity" />
-        <activity android:name=".ScannedBarcodeActivity" />
         <activity android:name=".CurrentLocationActivity" />
         <activity android:name=".ExplanationApp" />
         <activity android:name=".WelcomeActivity">

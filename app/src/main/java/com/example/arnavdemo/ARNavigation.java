@@ -23,6 +23,8 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
+import java.util.ArrayList;
+
 public class ARNavigation extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -41,6 +43,11 @@ public class ARNavigation extends AppCompatActivity {
         if (!checkIsSupportedDeviceOrFinish(this)) {
             return;
         }
+        String from = getIntent().getExtras().getString(DestinationActivity.FROM);
+        ArrayList<Integer> coordsOfCurrentPos = getIntent().getIntegerArrayListExtra(DestinationActivity.COORDS_OF_CURRENT_POS);
+        ArrayList<Integer> coordsOfDestinationId = getIntent().getIntegerArrayListExtra(DestinationActivity.COORDS_OF_DESTINATION_ID);
+        ArrayList<Integer> coordsOfEntrance = getIntent().getIntegerArrayListExtra(DestinationActivity.COORDS_OF_ENTRANCE);
+
         setContentView(R.layout.activity_arnavigation);
         setARFragment();
     }
