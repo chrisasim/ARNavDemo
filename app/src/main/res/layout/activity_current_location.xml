@@ -30,10 +30,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btnEntrance"
-                style="@style/buttonLocationStyle"
-                android:text="@string/main_entrance_button" />
+<!--            <Button-->
+<!--                android:id="@+id/btnEntrance"-->
+<!--                style="@style/buttonLocationStyle"-->
+<!--                android:text="@string/main_entrance_button" />-->
 
             <Button
                 android:id="@+id/btnMamoulisOffice"
@@ -49,33 +49,33 @@
                 android:layout_height="wrap_content"
                 android:text="@string/lykas_office_button" />
 
-            <Button
-                android:id="@+id/btnSecretariat"
-                style="@style/buttonLocationStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/secretariat_button" />
+<!--            <Button-->
+<!--                android:id="@+id/btnSecretariat"-->
+<!--                style="@style/buttonLocationStyle"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/secretariat_button" />-->
 
-            <Button
-                android:id="@+id/btnLaboratory"
-                style="@style/buttonLocationStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/laboratory_button" />
+<!--            <Button-->
+<!--                android:id="@+id/btnLaboratory"-->
+<!--                style="@style/buttonLocationStyle"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/laboratory_button" />-->
 
-            <Button
-                android:id="@+id/btnTelecommunicationsLaboratory"
-                style="@style/buttonLocationStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/telecommunicationsButton" />
+<!--            <Button-->
+<!--                android:id="@+id/btnTelecommunicationsLaboratory"-->
+<!--                style="@style/buttonLocationStyle"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/telecommunicationsButton" />-->
 
-            <Button
-                android:id="@+id/btnGraduateStudentOfficeA1"
-                style="@style/buttonLocationStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/A1OfficeButton" />
+<!--            <Button-->
+<!--                android:id="@+id/btnGraduateStudentOfficeA1"-->
+<!--                style="@style/buttonLocationStyle"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/A1OfficeButton" />-->
 
             <Button
                 android:id="@+id/btnBlekasOffice"
@@ -91,19 +91,19 @@
                 android:layout_height="wrap_content"
                 android:text="@string/A3Office" />
 
-            <Button
-                android:id="@+id/btnGraduateStudentOfficeA5"
-                style="@style/buttonLocationStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/A5office" />
+<!--            <Button-->
+<!--                android:id="@+id/btnGraduateStudentOfficeA5"-->
+<!--                style="@style/buttonLocationStyle"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/A5office" />-->
 
-            <Button
-                android:id="@+id/btnGraduateStudentOfficeA6"
-                style="@style/buttonLocationStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/A6Office" />
+<!--            <Button-->
+<!--                android:id="@+id/btnGraduateStudentOfficeA6"-->
+<!--                style="@style/buttonLocationStyle"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/A6Office" />-->
 
             <Button
                 android:id="@+id/btnZarrasOffice"
@@ -119,19 +119,19 @@
                 android:layout_height="wrap_content"
                 android:text="@string/A8Office" />
 
-            <Button
-                android:id="@+id/btnGraduateStudentOfficeA10"
-                style="@style/buttonLocationStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/A10Office" />
+<!--            <Button-->
+<!--                android:id="@+id/btnGraduateStudentOfficeA10"-->
+<!--                style="@style/buttonLocationStyle"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/A10Office" />-->
 
-            <Button
-                android:id="@+id/btnEdipMembers"
-                style="@style/buttonLocationStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/edidOffice" />
+<!--            <Button-->
+<!--                android:id="@+id/btnEdipMembers"-->
+<!--                style="@style/buttonLocationStyle"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/edidOffice" />-->
         </LinearLayout>
     </ScrollView>
 

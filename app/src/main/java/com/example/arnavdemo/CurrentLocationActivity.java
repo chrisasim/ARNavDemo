@@ -28,21 +28,21 @@ public class CurrentLocationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_current_location);
 
         Button btnScanBarcode = findViewById(R.id.qrCodeButton);
-        Button btnEntrance = findViewById((R.id.btnEntrance));
-        Button btnGraduateStudentOfficeA1 = findViewById(R.id.btnGraduateStudentOfficeA1);
+//        Button btnEntrance = findViewById((R.id.btnEntrance));
+//        Button btnGraduateStudentOfficeA1 = findViewById(R.id.btnGraduateStudentOfficeA1);
         Button btnBlekasOffice = findViewById(R.id.btnBlekasOffice);
         Button btnVlachosOffice = findViewById(R.id.btnVlachosOffice);
         Button btnLykasOffice = findViewById(R.id.btnLykasOffice);
-        Button btnGraduateStudentOfficeA5 = findViewById(R.id.btnGraduateStudentOfficeA5);
-        Button btnGraduateStudentOfficeA6 = findViewById((R.id.btnGraduateStudentOfficeA6));
+//        Button btnGraduateStudentOfficeA5 = findViewById(R.id.btnGraduateStudentOfficeA5);
+//        Button btnGraduateStudentOfficeA6 = findViewById((R.id.btnGraduateStudentOfficeA6));
         Button btnZarrasOffice = findViewById(R.id.btnZarrasOffice);
         Button btnPolenakisOffice = findViewById(R.id.btnPolenakisOffice);
         Button btnMamoulisOffice = findViewById(R.id.btnMamoulisOffice);
-        Button btnGraduateStudentOfficeA10 = findViewById(R.id.btnGraduateStudentOfficeA10);
-        Button btnSecretariat = findViewById(R.id.btnSecretariat);
-        Button btnLaboratory = findViewById(R.id.btnLaboratory);
-        Button btnTelecommunicationsLaboratory = findViewById(R.id.btnTelecommunicationsLaboratory);
-        Button btnEdipMembers = findViewById(R.id.btnEdipMembers);
+//        Button btnGraduateStudentOfficeA10 = findViewById(R.id.btnGraduateStudentOfficeA10);
+//        Button btnSecretariat = findViewById(R.id.btnSecretariat);
+//        Button btnLaboratory = findViewById(R.id.btnLaboratory);
+//        Button btnTelecommunicationsLaboratory = findViewById(R.id.btnTelecommunicationsLaboratory);
+//        Button btnEdipMembers = findViewById(R.id.btnEdipMembers);
 
         btnScanBarcode.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,9 +56,9 @@ public class CurrentLocationActivity extends AppCompatActivity {
             }
         });
 
-        clickButton(btnEntrance, "entrance");
-
-        clickButton(btnGraduateStudentOfficeA1, "graduateStudentOfficeA1");
+//        clickButton(btnEntrance, "entrance");
+//
+//        clickButton(btnGraduateStudentOfficeA1, "graduateStudentOfficeA1");
 
         clickButton(btnBlekasOffice, "blekasOffice");
 
@@ -66,9 +66,9 @@ public class CurrentLocationActivity extends AppCompatActivity {
 
         clickButton(btnLykasOffice, "lykasOffice");
 
-        clickButton(btnGraduateStudentOfficeA5, "graduateStudentOfficeA5");
-
-        clickButton(btnGraduateStudentOfficeA6, "graduateStudentOfficeA6");
+//        clickButton(btnGraduateStudentOfficeA5, "graduateStudentOfficeA5");
+//
+//        clickButton(btnGraduateStudentOfficeA6, "graduateStudentOfficeA6");
 
         clickButton(btnZarrasOffice, "zarrasOffice");
 
@@ -76,15 +76,15 @@ public class CurrentLocationActivity extends AppCompatActivity {
 
         clickButton(btnMamoulisOffice, "mamoulisOffice");
 
-        clickButton(btnGraduateStudentOfficeA10, "graduateStudentOfficeA10");
-
-        clickButton(btnSecretariat, "secretariat");
-
-        clickButton(btnLaboratory, "laboratory");
-
-        clickButton(btnTelecommunicationsLaboratory, "telecommunicationsLaboratory");
-
-        clickButton(btnEdipMembers, "edipMembers");
+//        clickButton(btnGraduateStudentOfficeA10, "graduateStudentOfficeA10");
+//
+//        clickButton(btnSecretariat, "secretariat");
+//
+//        clickButton(btnLaboratory, "laboratory");
+//
+//        clickButton(btnTelecommunicationsLaboratory, "telecommunicationsLaboratory");
+//
+//        clickButton(btnEdipMembers, "edipMembers");
     }
 
     private void clickButton(Button locationButton, String location) {

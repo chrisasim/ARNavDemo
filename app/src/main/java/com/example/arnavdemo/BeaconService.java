@@ -61,40 +61,37 @@ public class BeaconService extends Worker {
                     if (structure instanceof IBeacon) {
                         final IBeacon iBeacon = (IBeacon) structure;
                         final DocumentReference docref = FirebaseFirestore.getInstance().collection("beaconInfo").document(bluetoothDevice.getAddress());
-                        docref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    DocumentSnapshot documentSnapshot = task.getResult();
-                                    Distance = (float) calculateDistance(result.getRssi());
-                                    DistanceSecondMethod = (float) calculateDistanceSecondMethod(result.getRssi());
-                                    if (documentSnapshot != null && documentSnapshot.exists()) {
-                                        docref.update("RSSI", FieldValue.arrayUnion(result.getRssi()));
-                                        docref.update("Distance(m)", FieldValue.arrayUnion(Distance));
-                                    } else {
-                                        Map<String, Object> data = new HashMap<>();
-                                        data.put("Protocol", "iBeacon");
-                                        data.put("UUID", ConstantsVariables.uuid);
-                                        data.put("Major", iBeacon.getMajor());
-                                        data.put("Minor", iBeacon.getMinor());
-                                        data.put("MAC", bluetoothDevice.getAddress());
-                                        data.put("Device Name", bluetoothDevice.getName());
-                                        data.put("Class", bluetoothDevice.getBluetoothClass());
-                                        data.put("TxPower", result.getTxPower());
-                                        data.put("RSSI", FieldValue.arrayUnion(result.getRssi()));
-                                        data.put("Distance(m)", FieldValue.arrayUnion(Distance));
-                                        docref.set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Log.d(TAG, "user profile is created for ");
-                                            }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Log.d(TAG, "onFailure" + e.toString());
-                                            }
-                                        });
-                                    }
+                        docref.get().addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot documentSnapshot = task.getResult();
+                                Distance = (float) calculateDistance(result.getRssi());
+                                DistanceSecondMethod = (float) calculateDistanceSecondMethod(result.getRssi());
+                                if (documentSnapshot != null && documentSnapshot.exists()) {
+                                    docref.update("RSSI", FieldValue.arrayUnion(result.getRssi()));
+                                    docref.update("Distance(m)", FieldValue.arrayUnion(Distance));
+                                } else {
+                                    Map<String, Object> data = new HashMap<>();
+                                    data.put("Protocol", "iBeacon");
+                                    data.put("UUID", ConstantsVariables.uuid);
+                                    data.put("Major", iBeacon.getMajor());
+                                    data.put("Minor", iBeacon.getMinor());
+                                    data.put("MAC", bluetoothDevice.getAddress());
+                                    data.put("Device Name", bluetoothDevice.getName());
+                                    data.put("Class", bluetoothDevice.getBluetoothClass());
+                                    data.put("TxPower", result.getTxPower());
+                                    data.put("RSSI", FieldValue.arrayUnion(result.getRssi()));
+                                    data.put("Distance(m)", FieldValue.arrayUnion(Distance));
+                                    docref.set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "user profile is created for ");
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.d(TAG, "onFailure" + e.toString());
+                                        }
+                                    });
                                 }
                             }
                         });

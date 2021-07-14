@@ -16,18 +16,18 @@ public class Destination implements Location{
         ArrayList<Integer> coords = new ArrayList<>();
 
         switch (name) {
-            case "graduateStudentOfficeA1":
-                coords.add(181);
-                coords.add(227);
-                coords.add(281);
-                coords.add(225);
-                coords.add(282);
-                coords.add(341);
-                coords.add(182);
-                coords.add(340);
-                coords.add(230);
-                coords.add(286);
-                return coords;
+//            case "graduateStudentOfficeA1":
+//                coords.add(181);
+//                coords.add(227);
+//                coords.add(281);
+//                coords.add(225);
+//                coords.add(282);
+//                coords.add(341);
+//                coords.add(182);
+//                coords.add(340);
+//                coords.add(230);
+//                coords.add(286);
+//                return coords;
             case "blekasOffice":
                 coords.add(294);
                 coords.add(226);
@@ -64,30 +64,30 @@ public class Destination implements Location{
                 coords.add(462);
                 coords.add(291);
                 return coords;
-            case "graduateStudentOfficeA5":
-                coords.add(503);
-                coords.add(229);
-                coords.add(605);
-                coords.add(226);
-                coords.add(601);
-                coords.add(338);
-                coords.add(509);
-                coords.add(333);
-                coords.add(559);
-                coords.add(293);
-                return coords;
-            case "graduateStudentOfficeA6":
-                coords.add(719);
-                coords.add(228);
-                coords.add(814);
-                coords.add(226);
-                coords.add(810);
-                coords.add(333);
-                coords.add(723);
-                coords.add(333);
-                coords.add(775);
-                coords.add(292);
-                return coords;
+//            case "graduateStudentOfficeA5":
+//                coords.add(503);
+//                coords.add(229);
+//                coords.add(605);
+//                coords.add(226);
+//                coords.add(601);
+//                coords.add(338);
+//                coords.add(509);
+//                coords.add(333);
+//                coords.add(559);
+//                coords.add(293);
+//                return coords;
+//            case "graduateStudentOfficeA6":
+//                coords.add(719);
+//                coords.add(228);
+//                coords.add(814);
+//                coords.add(226);
+//                coords.add(810);
+//                coords.add(333);
+//                coords.add(723);
+//                coords.add(333);
+//                coords.add(775);
+//                coords.add(292);
+//                return coords;
             case "zarrasOffice":
                 coords.add(835);
                 coords.add(225);
@@ -124,66 +124,66 @@ public class Destination implements Location{
                 coords.add(998);
                 coords.add(293);
                 return coords;
-            case "graduateStudentOfficeA10":
-                coords.add(1042);
-                coords.add(224);
-                coords.add(1136);
-                coords.add(224);
-                coords.add(1136);
-                coords.add(335);
-                coords.add(1041);
-                coords.add(331);
-                coords.add(1086);
-                coords.add(291);
-                return coords;
-            case "secretariat":
-                coords.add(180);
-                coords.add(18);
-                coords.add(281);
-                coords.add(19);
-                coords.add(272);
-                coords.add(130);
-                coords.add(186);
-                coords.add(138);
-                coords.add(230);
-                coords.add(76);
-                return coords;
-            case "laboratory":
-                coords.add(311);
-                coords.add(28);
-                coords.add(575);
-                coords.add(38);
-                coords.add(561);
-                coords.add(150);
-                coords.add(299);
-                coords.add(157);
-                coords.add(429);
-                coords.add(91);
-                return coords;
-            case "telecommunicationsLaboratory":
-                coords.add(732);
-                coords.add(24);
-                coords.add(1038);
-                coords.add(30);
-                coords.add(1018);
-                coords.add(159);
-                coords.add(806);
-                coords.add(144);
-                coords.add(915);
-                coords.add(72);
-                return coords;
-            case "edipMembers":
-                coords.add(1065);
-                coords.add(25);
-                coords.add(1138);
-                coords.add(24);
-                coords.add(1137);
-                coords.add(140);
-                coords.add(1065);
-                coords.add(143);
-                coords.add(1101);
-                coords.add(74);
-                return coords;
+//            case "graduateStudentOfficeA10":
+//                coords.add(1042);
+//                coords.add(224);
+//                coords.add(1136);
+//                coords.add(224);
+//                coords.add(1136);
+//                coords.add(335);
+//                coords.add(1041);
+//                coords.add(331);
+//                coords.add(1086);
+//                coords.add(291);
+//                return coords;
+//            case "secretariat":
+//                coords.add(180);
+//                coords.add(18);
+//                coords.add(281);
+//                coords.add(19);
+//                coords.add(272);
+//                coords.add(130);
+//                coords.add(186);
+//                coords.add(138);
+//                coords.add(230);
+//                coords.add(76);
+//                return coords;
+//            case "laboratory":
+//                coords.add(311);
+//                coords.add(28);
+//                coords.add(575);
+//                coords.add(38);
+//                coords.add(561);
+//                coords.add(150);
+//                coords.add(299);
+//                coords.add(157);
+//                coords.add(429);
+//                coords.add(91);
+//                return coords;
+//            case "telecommunicationsLaboratory":
+//                coords.add(732);
+//                coords.add(24);
+//                coords.add(1038);
+//                coords.add(30);
+//                coords.add(1018);
+//                coords.add(159);
+//                coords.add(806);
+//                coords.add(144);
+//                coords.add(915);
+//                coords.add(72);
+//                return coords;
+//            case "edipMembers":
+//                coords.add(1065);
+//                coords.add(25);
+//                coords.add(1138);
+//                coords.add(24);
+//                coords.add(1137);
+//                coords.add(140);
+//                coords.add(1065);
+//                coords.add(143);
+//                coords.add(1101);
+//                coords.add(74);
+//                return coords;
         }
 
         return null;

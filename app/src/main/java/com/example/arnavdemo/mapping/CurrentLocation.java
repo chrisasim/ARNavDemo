@@ -16,14 +16,14 @@ public class CurrentLocation implements Location{
         ArrayList<Integer> coords = new ArrayList<>();
 
         switch (name) {
-            case "entrance":
-                coords.add(48);
-                coords.add(190);
-                return coords;
-            case "graduateStudentOfficeA1":
-                coords.add(280);
-                coords.add(213);
-                return coords;
+//            case "entrance":
+//                coords.add(48);
+//                coords.add(190);
+//                return coords;
+//            case "graduateStudentOfficeA1":
+//                coords.add(280);
+//                coords.add(213);
+//                return coords;
             case "blekasOffice":
                 coords.add(365);
                 coords.add(231);
@@ -36,14 +36,14 @@ public class CurrentLocation implements Location{
                 coords.add(420);
                 coords.add(229);
                 return coords;
-            case "graduateStudentOfficeA5":
-                coords.add(508);
-                coords.add(212);
-                return coords;
-            case "graduateStudentOfficeA6":
-                coords.add(816);
-                coords.add(212);
-                return coords;
+//            case "graduateStudentOfficeA5":
+//                coords.add(508);
+//                coords.add(212);
+//                return coords;
+//            case "graduateStudentOfficeA6":
+//                coords.add(816);
+//                coords.add(212);
+//                return coords;
             case "zarrasOffice":
                 coords.add(902);
                 coords.add(228);
@@ -56,26 +56,26 @@ public class CurrentLocation implements Location{
                 coords.add(958);
                 coords.add(229);
                 return coords;
-            case "graduateStudentOfficeA10":
-                coords.add(1042);
-                coords.add(213);
-                return coords;
-            case "secretariat":
-                coords.add(186);
-                coords.add(156);
-                return coords;
-            case "laboratory":
-                coords.add(278);
-                coords.add(171);
-                return coords;
-            case "telecommunicationsLaboratory":
-                coords.add(803);
-                coords.add(171);
-                return coords;
-            case "edipMembers":
-                coords.add(1140);
-                coords.add(158);
-                return coords;
+//            case "graduateStudentOfficeA10":
+//                coords.add(1042);
+//                coords.add(213);
+//                return coords;
+//            case "secretariat":
+//                coords.add(186);
+//                coords.add(156);
+//                return coords;
+//            case "laboratory":
+//                coords.add(278);
+//                coords.add(171);
+//                return coords;
+//            case "telecommunicationsLaboratory":
+//                coords.add(803);
+//                coords.add(171);
+//                return coords;
+//            case "edipMembers":
+//                coords.add(1140);
+//                coords.add(158);
+//                return coords;
         }
 
         return null;

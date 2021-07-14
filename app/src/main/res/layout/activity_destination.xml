@@ -69,12 +69,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btnGraduateStudentOfficeA1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/dest1"
-                style="@style/destinationMenuStyle" />
+<!--            <Button-->
+<!--                android:id="@+id/btnGraduateStudentOfficeA1"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/dest1"-->
+<!--                style="@style/destinationMenuStyle" />-->
 
             <Button
                 android:id="@+id/btnBlekasOffice"
@@ -97,19 +97,19 @@
                 android:layout_height="wrap_content"
                 android:text="@string/dest4" />
 
-            <Button
-                android:id="@+id/btnGraduateStudentOfficeA5"
-                style="@style/destinationMenuStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/dest5" />
+<!--            <Button-->
+<!--                android:id="@+id/btnGraduateStudentOfficeA5"-->
+<!--                style="@style/destinationMenuStyle"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/dest5" />-->
 
-            <Button
-                android:id="@+id/btnGraduateStudentOfficeA6"
-                style="@style/destinationMenuStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/dest6" />
+<!--            <Button-->
+<!--                android:id="@+id/btnGraduateStudentOfficeA6"-->
+<!--                style="@style/destinationMenuStyle"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/dest6" />-->
 
             <Button
                 android:id="@+id/btnZarrasOffice"
@@ -132,40 +132,40 @@
                 android:layout_height="wrap_content"
                 android:text="@string/dest9" />
 
-            <Button
-                android:id="@+id/btnGraduateStudentOfficeA10"
-                style="@style/destinationMenuStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/dest10" />
+<!--            <Button-->
+<!--                android:id="@+id/btnGraduateStudentOfficeA10"-->
+<!--                style="@style/destinationMenuStyle"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/dest10" />-->
 
-            <Button
-                android:id="@+id/btnSecretariat"
-                style="@style/destinationMenuStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/dest11" />
+<!--            <Button-->
+<!--                android:id="@+id/btnSecretariat"-->
+<!--                style="@style/destinationMenuStyle"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/dest11" />-->
 
-            <Button
-                android:id="@+id/btnLaboratory"
-                style="@style/destinationMenuStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/dest12" />
+<!--            <Button-->
+<!--                android:id="@+id/btnLaboratory"-->
+<!--                style="@style/destinationMenuStyle"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/dest12" />-->
 
-            <Button
-                android:id="@+id/btnTelecommunicationsLaboratory"
-                style="@style/destinationMenuStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/dest13" />
+<!--            <Button-->
+<!--                android:id="@+id/btnTelecommunicationsLaboratory"-->
+<!--                style="@style/destinationMenuStyle"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/dest13" />-->
 
-            <Button
-                android:id="@+id/btnEdipMembers"
-                style="@style/destinationMenuStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/dest14" />
+<!--            <Button-->
+<!--                android:id="@+id/btnEdipMembers"-->
+<!--                style="@style/destinationMenuStyle"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/dest14" />-->
         </LinearLayout>
     </ScrollView>
 
