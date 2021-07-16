@@ -36,6 +36,7 @@ public class ARNavigation extends AppCompatActivity {
     private Anchor mAnchor = null;
     private TransformableNode mARObject = null;
     private AnchorNode mAnchorNode = null;
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,9 @@ public class ARNavigation extends AppCompatActivity {
                             toast.show();
                             return null;
                         });
+        mARFragment.getArSceneView().getScene().addOnUpdateListener(this::onSceneUpdate);
 
+        /*
         Node node = new Node();
         node.setParent(mARFragment.getArSceneView().getScene());
         node.setRenderable(mObjRenderable);
@@ -99,7 +102,35 @@ public class ARNavigation extends AppCompatActivity {
                     mARObject.setRenderable(mObjRenderable);
                     mARObject.select();
                 });
+                */
     }
+    
+    private void onSceneUpdate(FrameTime frameTime) {
+        // Let the fragment update its state first.
+        mARFragment.onUpdate(frameTime);
+
+        // If there is no frame then don't process anything.
+        if (mARFragment.getArSceneView().getArFrame() == null) {
+            return;
+        }
+
+        // If ARCore is not tracking yet, then don't process anything.
+        if (mARFragment.getArSceneView().getArFrame().getCamera().getTrackingState() != TrackingState.TRACKING) {
+            return;
+        }
+
+        // Place the anchor 1m in front of the camera if anchorNode is null.
+        if (this.mAnchorNode == null) {
+            Session session = mARFragment.getArSceneView().getSession();
+            float[] pos = {0, 0, -10};
+            float[] rotation = {90, -180, 120, 90};
+            Anchor anchor = session.createAnchor(new Pose(pos, rotation));
+            mAnchorNode = new AnchorNode(anchor);
+            mAnchorNode.setRenderable(mObjRenderable);
+            mAnchorNode.setParent(mARFragment.getArSceneView().getScene());
+        }
+    }
+    
 
     public static boolean checkIsSupportedDeviceOrFinish(final Activity activity) {
 
