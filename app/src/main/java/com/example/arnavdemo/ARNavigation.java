@@ -1,7 +1,5 @@
 package com.example.arnavdemo;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -11,7 +9,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
@@ -20,7 +23,6 @@ import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
-import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.util.ArrayList;
@@ -31,11 +33,17 @@ public class ARNavigation extends AppCompatActivity {
     private static final double MIN_OPENGL_VERSION = 3.0;
 
 
-    private ArFragment mARFragment;
+    private CloudAnchorFragment mARFragment;
     private ModelRenderable mObjRenderable;
     private Anchor mAnchor = null;
     private TransformableNode mARObject = null;
     private AnchorNode mAnchorNode = null;
+    private String BLEKAS_OFFICE = "blekasOffice";
+    private String VLACHOS_OFFICE = "vlachosOffice";
+    private String LYKAS_OFFICE = "lykasOffice";
+    private String ZARRAS_OFFICE = "zarrasOffice";
+    private String POLENAKIS_OFFICE = "polenakisOffice";
+    private String MAMOULIS_OFFICE = "mamoulisOffice";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +57,14 @@ public class ARNavigation extends AppCompatActivity {
         ArrayList<Integer> coordsOfEntrance = getIntent().getIntegerArrayListExtra(DestinationActivity.COORDS_OF_ENTRANCE);
 
         setContentView(R.layout.activity_arnavigation);
+
+        Button resolve = findViewById(R.id.resolve);
+
         setARFragment();
     }
 
     private void setARFragment() {
-        mARFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
+        mARFragment = (CloudAnchorFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
         // When you build a Renderable, Sceneform loads its resources in the background while returning
         // a CompletableFuture. Call thenAccept(), handle(), or check isDone() before calling get().
 
@@ -93,13 +104,14 @@ public class ARNavigation extends AppCompatActivity {
                     mARObject.getScaleController().setMaxScale(2.0f);
 
                     // Set the local scale of the node BEFORE setting its parent
-                    mARObject.setLocalScale(new Vector3(0.2f, 0.2f, 0.2f));
+                    mARObject.setLocalScale(new Vector3  (0.2f, 0.2f, 0.2f));
 
                     mARObject.setParent(mAnchorNode);
                     mARObject.setRenderable(mObjRenderable);
                     mARObject.select();
                 });
     }
+
 
     public static boolean checkIsSupportedDeviceOrFinish(final Activity activity) {
 
