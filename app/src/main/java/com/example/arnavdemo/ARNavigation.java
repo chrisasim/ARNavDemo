@@ -1,5 +1,7 @@
 package com.example.arnavdemo;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -9,20 +11,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
+import com.google.ar.core.Pose;
+import com.google.ar.core.Session;
+import com.google.ar.core.TrackingState;
 import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.util.ArrayList;
@@ -33,17 +36,12 @@ public class ARNavigation extends AppCompatActivity {
     private static final double MIN_OPENGL_VERSION = 3.0;
 
 
-    private CloudAnchorFragment mARFragment;
+    private ArFragment mARFragment;
     private ModelRenderable mObjRenderable;
     private Anchor mAnchor = null;
     private TransformableNode mARObject = null;
     private AnchorNode mAnchorNode = null;
-    private String BLEKAS_OFFICE = "blekasOffice";
-    private String VLACHOS_OFFICE = "vlachosOffice";
-    private String LYKAS_OFFICE = "lykasOffice";
-    private String ZARRAS_OFFICE = "zarrasOffice";
-    private String POLENAKIS_OFFICE = "polenakisOffice";
-    private String MAMOULIS_OFFICE = "mamoulisOffice";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +55,11 @@ public class ARNavigation extends AppCompatActivity {
         ArrayList<Integer> coordsOfEntrance = getIntent().getIntegerArrayListExtra(DestinationActivity.COORDS_OF_ENTRANCE);
 
         setContentView(R.layout.activity_arnavigation);
-
-        Button resolve = findViewById(R.id.resolve);
-
         setARFragment();
     }
 
     private void setARFragment() {
-        mARFragment = (CloudAnchorFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+        mARFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
         // When you build a Renderable, Sceneform loads its resources in the background while returning
         // a CompletableFuture. Call thenAccept(), handle(), or check isDone() before calling get().
 
@@ -79,37 +74,66 @@ public class ARNavigation extends AppCompatActivity {
                             toast.show();
                             return null;
                         });
+        mARFragment.getArSceneView().getScene().addOnUpdateListener(this::onSceneUpdate);
 
+        /*
         Node node = new Node();
         node.setParent(mARFragment.getArSceneView().getScene());
         node.setRenderable(mObjRenderable);
-
         mARFragment.setOnTapArPlaneListener(
                 (HitResult hitResult, Plane plane, MotionEvent motionEvent) -> {
                     if (mObjRenderable == null) {
                         return;
                     }
-
                     // Create the Anchor.
                     mAnchor = hitResult.createAnchor();
                     mAnchorNode = new AnchorNode(mAnchor);
                     mAnchorNode.setParent(mARFragment.getArSceneView().getScene());
-
                     // Create the transformable object and add it to the anchor.
                     mARObject = new TransformableNode(mARFragment.getTransformationSystem());
-
                     // Set the min and max scales of the ScaleController.
                     // Default min is 0.75, default max is 1.75.
                     mARObject.getScaleController().setMinScale(0.1f);
                     mARObject.getScaleController().setMaxScale(2.0f);
-
                     // Set the local scale of the node BEFORE setting its parent
-                    mARObject.setLocalScale(new Vector3  (0.2f, 0.2f, 0.2f));
-
+                    mARObject.setLocalScale(new Vector3(0.2f, 0.2f, 0.2f));
                     mARObject.setParent(mAnchorNode);
                     mARObject.setRenderable(mObjRenderable);
                     mARObject.select();
                 });
+                */
+    }
+
+    private void onSceneUpdate(FrameTime frameTime) {
+        // Let the fragment update its state first.
+        mARFragment.onUpdate(frameTime);
+
+        // If there is no frame then don't process anything.
+        if (mARFragment.getArSceneView().getArFrame() == null) {
+            return;
+        }
+
+        // If ARCore is not tracking yet, then don't process anything.
+        if (mARFragment.getArSceneView().getArFrame().getCamera().getTrackingState() != TrackingState.TRACKING) {
+            return;
+        }
+
+        // Place the anchor 1m in front of the camera if anchorNode is null.
+        if (this.mAnchorNode == null) {
+            Session session = mARFragment.getArSceneView().getSession();
+            Pose pos = mARFragment.getArSceneView().getArFrame().getCamera().getPose().compose(Pose.makeTranslation(0, 0, -1));
+            Anchor anchor = session.createAnchor(pos);
+            mAnchorNode = new AnchorNode(anchor);
+            mAnchorNode.setParent(mARFragment.getArSceneView().getScene());
+
+            // Create the arrow node and add it to the anchor.
+            Node arrow = new Node();
+            Quaternion rotation1 = Quaternion.axisAngle(new Vector3(1.3f, 0.5f, 0.0f), 90); // rotate X axis 90 degrees
+            Quaternion rotation2 = Quaternion.axisAngle(new Vector3(0.5f, -1.5f, 1.0f), 90); // rotate Y axis 90 degrees
+            arrow.setLocalRotation(Quaternion.multiply(rotation1, rotation2));
+            arrow.setParent(mAnchorNode);
+            arrow.setRenderable(mObjRenderable);
+        }
     }
 
 
