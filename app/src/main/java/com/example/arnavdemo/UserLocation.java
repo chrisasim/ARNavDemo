@@ -38,8 +38,8 @@ public class UserLocation extends AppCompatActivity {
     //beacon Service
     private FirebaseFirestore fStore;
     StorageReference storageReference;
-    public static final String TAG = "Location";
-    private CollectionReference notebookRef = fStore.collection("beaconInfo");
+    public static final String TAG = UserLocation.class.getSimpleName;
+    CollectionReference notebookRef;
     private ListenerRegistration notebookListener;
     List<Double> distance437List, distance574List, distance570List= new ArrayList<>();
     double distance437=0, distance570=0, distance574 = 0;
@@ -52,10 +52,11 @@ public class UserLocation extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_coordinates);
-        onResume();
-
+        //onResume();
         fStore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
+        notebookRef = fStore.collection("beaconInfo");
+
 
     }
 
