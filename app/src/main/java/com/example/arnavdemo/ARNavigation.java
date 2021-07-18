@@ -63,17 +63,7 @@ public class ARNavigation extends AppCompatActivity {
         // When you build a Renderable, Sceneform loads its resources in the background while returning
         // a CompletableFuture. Call thenAccept(), handle(), or check isDone() before calling get().
 
-        ModelRenderable.builder()
-                .setSource(this, Uri.parse("model.sfb"))
-                .build()
-                .thenAccept(renderable -> mObjRenderable = renderable)
-                .exceptionally(
-                        throwable -> {
-                            Toast toast = Toast.makeText(this, "Unable to load obj renderable", Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                            return null;
-                        });
+        create3dModel();
         mARFragment.getArSceneView().getScene().addOnUpdateListener(this::onSceneUpdate);
 
         /*
@@ -104,6 +94,20 @@ public class ARNavigation extends AppCompatActivity {
                 */
     }
 
+    private void create3dModel() {
+        ModelRenderable.builder()
+                .setSource(this, Uri.parse("model.sfb"))
+                .build()
+                .thenAccept(renderable -> mObjRenderable = renderable)
+                .exceptionally(
+                        throwable -> {
+                            Toast toast = Toast.makeText(this, "Unable to load obj renderable", Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        });
+    }
+
     private void onSceneUpdate(FrameTime frameTime) {
         // Let the fragment update its state first.
         mARFragment.onUpdate(frameTime);
@@ -120,20 +124,25 @@ public class ARNavigation extends AppCompatActivity {
 
         // Place the anchor 1m in front of the camera if anchorNode is null.
         if (this.mAnchorNode == null) {
-            Session session = mARFragment.getArSceneView().getSession();
-            Pose pos = mARFragment.getArSceneView().getArFrame().getCamera().getPose().compose(Pose.makeTranslation(0, 0, -1));
-            Anchor anchor = session.createAnchor(pos);
-            mAnchorNode = new AnchorNode(anchor);
-            mAnchorNode.setParent(mARFragment.getArSceneView().getScene());
-
-            // Create the arrow node and add it to the anchor.
-            Node arrow = new Node();
-            Quaternion rotation1 = Quaternion.axisAngle(new Vector3(1.3f, 0.5f, 0.0f), 90); // rotate X axis 90 degrees
-            Quaternion rotation2 = Quaternion.axisAngle(new Vector3(0.5f, -1.5f, 1.0f), 90); // rotate Y axis 90 degrees
-            arrow.setLocalRotation(Quaternion.multiply(rotation1, rotation2));
-            arrow.setParent(mAnchorNode);
-            arrow.setRenderable(mObjRenderable);
+            addModelToScene();
         }
+    }
+
+    private void addModelToScene() {
+
+        Session session = mARFragment.getArSceneView().getSession();
+        Pose pos = mARFragment.getArSceneView().getArFrame().getCamera().getPose().compose(Pose.makeTranslation(0, 0, -1));
+        Anchor anchor = session.createAnchor(pos);
+        mAnchorNode = new AnchorNode(anchor);
+        mAnchorNode.setParent(mARFragment.getArSceneView().getScene());
+
+        // Create the arrow node and add it to the anchor.
+        Node arrow = new Node();
+        Quaternion rotation1 = Quaternion.axisAngle(new Vector3(1.3f, 0.5f, 0.0f), 90); // rotate X axis 90 degrees
+        Quaternion rotation2 = Quaternion.axisAngle(new Vector3(0.5f, -1.5f, 1.0f), 90); // rotate Y axis 90 degrees
+        arrow.setLocalRotation(Quaternion.multiply(rotation1, rotation2));
+        arrow.setParent(mAnchorNode);
+        arrow.setRenderable(mObjRenderable);
     }
 
 
