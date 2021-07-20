@@ -6,5 +6,6 @@ public class ConstantsVariables {
     public static int minor_437 = 1;
     public static int minor_570 = 2;
     public static int minor_574 = 3;
+    public static float sensor = 0;
 
 }
