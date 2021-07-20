@@ -38,7 +38,7 @@ public class UserLocation extends AppCompatActivity {
     //beacon Service
     private FirebaseFirestore fStore;
     StorageReference storageReference;
-    public static final String TAG = UserLocation.class.getSimpleName;
+    public static final String TAG = UserLocation.class.getSimpleName();
     CollectionReference notebookRef;
     private ListenerRegistration notebookListener;
     List<Double> distance437List, distance574List, distance570List= new ArrayList<>();
