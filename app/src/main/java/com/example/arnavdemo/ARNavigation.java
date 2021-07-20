@@ -160,6 +160,7 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
 
 
     private void onSceneUpdate(FrameTime frameTime) {
+         Log.i(TAG, String.valueOf(ConstantsVariables.sensor));
         // Let the fragment update its state first.
         mARFragment.onUpdate(frameTime);
 
@@ -176,7 +177,6 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
         // Place the anchor 1m in front of the camera if anchorNode is null.
         if (this.mAnchorNode == null) {
             //Get the direction of the mobile device according to Z-axis
-            Log.i(TAG, String.valueOf(ConstantsVariable.sensor));
             addModelToScene();
         }
     }
