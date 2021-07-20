@@ -1,16 +1,25 @@
 package com.example.arnavdemo;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.Toast;
 
 import com.google.ar.core.Anchor;
@@ -30,7 +39,7 @@ import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.util.ArrayList;
 
-public class ARNavigation extends AppCompatActivity implements SensorEventListener  {
+public class ARNavigation extends AppCompatActivity implements SensorEventListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final double MIN_OPENGL_VERSION = 3.0;
@@ -176,7 +185,7 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
         // Place the anchor 1m in front of the camera if anchorNode is null.
         if (this.mAnchorNode == null) {
             //Get the direction of the mobile device according to Z-axis
-            Log.i(TAG, String.valueOf(ConstantsVariable.sensor));
+            Log.i(TAG, String.valueOf(ConstantsVariables.sensor));
             addModelToScene();
         }
     }
