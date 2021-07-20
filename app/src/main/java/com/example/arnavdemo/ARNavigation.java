@@ -30,17 +30,17 @@ import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.util.ArrayList;
 
-public class ARNavigation extends AppCompatActivity {
+public class ARNavigation extends AppCompatActivity implements SensorEventListener  {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final double MIN_OPENGL_VERSION = 3.0;
-
-
+    private SensorManager sensorManager;
     private ArFragment mARFragment;
     private ModelRenderable mObjRenderable;
     private Anchor mAnchor = null;
     private TransformableNode mARObject = null;
     private AnchorNode mAnchorNode = null;
+    private float currentDegree = 0f;
 
 
     @Override
@@ -53,7 +53,7 @@ public class ARNavigation extends AppCompatActivity {
         ArrayList<Integer> coordsOfCurrentPos = getIntent().getIntegerArrayListExtra(DestinationActivity.COORDS_OF_CURRENT_POS);
         ArrayList<Integer> coordsOfDestinationId = getIntent().getIntegerArrayListExtra(DestinationActivity.COORDS_OF_DESTINATION_ID);
         ArrayList<Integer> coordsOfEntrance = getIntent().getIntegerArrayListExtra(DestinationActivity.COORDS_OF_ENTRANCE);
-
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         setContentView(R.layout.activity_arnavigation);
         setARFragment();
     }
@@ -107,6 +107,57 @@ public class ARNavigation extends AppCompatActivity {
                             return null;
                         });
     }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        WorkRequest beaconWorker = new OneTimeWorkRequest.Builder(BeaconService.class).build();
+        WorkManager.getInstance(getApplicationContext()).enqueue(beaconWorker);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        // get the angle around the z-axis rotated
+        float degreez = Math.round(event.values[0]);
+        // get the angle around the x-axis rotated
+        float degreex = Math.round(event.values[1]);
+        // get the angle around the y-axis rotated
+        float degreey = Math.round(event.values[2]);
+        ConstantsVariables.sensor = degreez;
+        //tvHeading.setText("Heading: " + Float.toString(degree) + " degrees");
+
+        // create a rotation animation (reverse turn degree degrees)
+        RotateAnimation ra = new RotateAnimation(
+                currentDegree,
+                -degreez,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f);
+
+        // how long the animation will take place
+        ra.setDuration(210);
+
+        // set the animation after the end of the reservation status
+        ra.setFillAfter(true);
+
+        // Start the animation
+        //image.startAnimation(ra);
+        //Log.i(TAG, String.valueOf(ra));
+        currentDegree = -degreez;
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // not in use
+    }
+
 
     private void onSceneUpdate(FrameTime frameTime) {
         // Let the fragment update its state first.
@@ -124,12 +175,13 @@ public class ARNavigation extends AppCompatActivity {
 
         // Place the anchor 1m in front of the camera if anchorNode is null.
         if (this.mAnchorNode == null) {
+            //Get the direction of the mobile device according to Z-axis
+            Log.i(TAG, String.valueOf(ConstantsVariable.sensor));
             addModelToScene();
         }
     }
 
     private void addModelToScene() {
-
         Session session = mARFragment.getArSceneView().getSession();
         Pose pos = mARFragment.getArSceneView().getArFrame().getCamera().getPose().compose(Pose.makeTranslation(0, 0, -1));
         Anchor anchor = session.createAnchor(pos);
