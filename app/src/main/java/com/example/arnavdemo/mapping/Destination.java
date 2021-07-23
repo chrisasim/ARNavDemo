@@ -29,6 +29,7 @@ public class Destination implements Location{
 //                coords.add(286);
 //                return coords;
             case "blekasOffice":
+                coords.add(1);
                 coords.add(294);
                 coords.add(226);
                 coords.add(347);
@@ -41,6 +42,7 @@ public class Destination implements Location{
                 coords.add(285);
                 return coords;
             case "vlachosOffice":
+                coords.add(2);
                 coords.add(362);
                 coords.add(249);
                 coords.add(418);
@@ -53,6 +55,7 @@ public class Destination implements Location{
                 coords.add(296);
                 return coords;
             case "lykasOffice":
+                coords.add(3);
                 coords.add(431);
                 coords.add(227);
                 coords.add(485);
@@ -89,6 +92,7 @@ public class Destination implements Location{
 //                coords.add(292);
 //                return coords;
             case "zarrasOffice":
+                coords.add(4);
                 coords.add(835);
                 coords.add(225);
                 coords.add(887);
@@ -101,6 +105,7 @@ public class Destination implements Location{
                 coords.add(283);
                 return coords;
             case "polenakisOffice":
+                coords.add(5);
                 coords.add(903);
                 coords.add(246);
                 coords.add(950);
@@ -113,6 +118,7 @@ public class Destination implements Location{
                 coords.add(294);
                 return coords;
             case "mamoulisOffice":
+                coords.add(6);
                 coords.add(967);
                 coords.add(224);
                 coords.add(1022);

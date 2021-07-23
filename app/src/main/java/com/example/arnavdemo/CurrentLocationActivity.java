@@ -21,6 +21,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
     private ArrayList<Integer> coordinates;
     public static final String COORDS_OF_ENTRANCE = "coordsOfEntrance";
     public static final String COORDS_OF_LOCATION = "coordsOfLocation";
+    public static String SELECT_LOCATION_FROM = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +97,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
                 coordinates = point.getCoordinates();
                 Intent intent = new Intent(CurrentLocationActivity.this, DestinationActivity.class);
                 intent.putIntegerArrayListExtra(COORDS_OF_LOCATION, coordinates);
+                SELECT_LOCATION_FROM = "fromMenu";
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(), "You set your location successfully", Toast.LENGTH_SHORT).show();
             }
@@ -117,9 +119,11 @@ public class CurrentLocationActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(CurrentLocationActivity.this, DestinationActivity.class);
                 ArrayList<Integer> coordsOfEntrance = new ArrayList<>();
-                coordsOfEntrance.add(48);
-                coordsOfEntrance.add(190);
+                coordsOfEntrance.add(6);
+                coordsOfEntrance.add(958);
+                coordsOfEntrance.add(229);
                 intent.putIntegerArrayListExtra(COORDS_OF_ENTRANCE, coordsOfEntrance);
+                SELECT_LOCATION_FROM = "fromQRCode";
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(), "You set your location successfully", Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), String.valueOf(result.getFormatName()), Toast.LENGTH_SHORT).show();

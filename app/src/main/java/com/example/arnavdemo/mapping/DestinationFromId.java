@@ -28,6 +28,7 @@ public class DestinationFromId {
 //                coords.add(286);
 //                return coords;
             case "A.2":
+                coords.add(1);
                 coords.add(294);
                 coords.add(226);
                 coords.add(347);
@@ -40,6 +41,7 @@ public class DestinationFromId {
                 coords.add(285);
                 return coords;
             case "A.3":
+                coords.add(2);
                 coords.add(362);
                 coords.add(249);
                 coords.add(418);
@@ -52,6 +54,7 @@ public class DestinationFromId {
                 coords.add(296);
                 return coords;
             case "A.4":
+                coords.add(3);
                 coords.add(431);
                 coords.add(227);
                 coords.add(485);
@@ -88,6 +91,7 @@ public class DestinationFromId {
 //                coords.add(292);
 //                return coords;
             case "A.7":
+                coords.add(4);
                 coords.add(835);
                 coords.add(225);
                 coords.add(887);
@@ -100,6 +104,7 @@ public class DestinationFromId {
                 coords.add(283);
                 return coords;
             case "A.8":
+                coords.add(5);
                 coords.add(903);
                 coords.add(246);
                 coords.add(950);
@@ -112,6 +117,7 @@ public class DestinationFromId {
                 coords.add(294);
                 return coords;
             case "A.9":
+                coords.add(6);
                 coords.add(967);
                 coords.add(224);
                 coords.add(1022);

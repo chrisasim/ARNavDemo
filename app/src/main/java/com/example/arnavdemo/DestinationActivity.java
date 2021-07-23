@@ -36,10 +36,10 @@ public class DestinationActivity extends AppCompatActivity implements View.OnCli
     public static final String COORDS_OF_CURRENT_POS = "coordsOfCurrentPos";
     public static final String COORDS_OF_DESTINATION_ID = "coordsOfDestinationId";
     public static final String COORDS_OF_ENTRANCE = "coordsOfEntrance";
+    public static String SELECT_DESTINATION_FROM = null;
 
-
-    private ArrayList<Integer> locationPoint = new ArrayList<>();
-    private ArrayList<Integer> coordsOfEntrance = new ArrayList<>();
+    private ArrayList<Integer> locationPoint;
+    private ArrayList<Integer> coordsOfEntrance;
 
     private EditText enterOfficeId;
 
@@ -69,6 +69,7 @@ public class DestinationActivity extends AppCompatActivity implements View.OnCli
                     intent.putIntegerArrayListExtra(COORDS_OF_DESTINATION_ID, destinationPolygon);
                     intent.putIntegerArrayListExtra(COORDS_OF_CURRENT_POS, locationPoint);
                     intent.putExtra(COORDS_OF_ENTRANCE, coordsOfEntrance);
+                    SELECT_DESTINATION_FROM = "fromId";
                     startActivity(intent);
                     Toast.makeText(getApplicationContext(), "You select your destination successfully", Toast.LENGTH_SHORT).show();
                 }
@@ -169,6 +170,7 @@ public class DestinationActivity extends AppCompatActivity implements View.OnCli
         intent.putExtra(FROM, Section);
         intent.putIntegerArrayListExtra(COORDS_OF_CURRENT_POS, locationPoint);
         intent.putExtra(COORDS_OF_ENTRANCE, coordsOfEntrance);
+        SELECT_DESTINATION_FROM = "fromMenu";
         startActivity(intent);
         Toast.makeText(getApplicationContext(), "You select your destination successfully", Toast.LENGTH_SHORT).show();
     }
