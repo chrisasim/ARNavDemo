@@ -8,11 +8,16 @@ public class Path {
     private int src;
     private int dest;
 
+
     public Path(int src, int dest) {
         this.src = src;
         this.dest = dest;
     }
 
+    /**
+     * function to create the path
+     * @return
+     */
     public ArrayList<Integer> createPath() {
         // No of vertices
         int v = 7;
@@ -44,15 +49,28 @@ public class Path {
         return path;
     }
 
-    // function to form edge between two vertices
-    // source and dest
+
+    /**
+     * function to form edge between two vertices source and dest
+     * @param adj
+     * @param i
+     * @param j
+     */
     private static void addEdge(ArrayList<ArrayList<Integer>> adj, int i, int j) {
         adj.get(i).add(j);
         adj.get(j).add(i);
     }
 
-    // function to find the shortest path
-    // between source vertex and destination vertex
+
+    /**
+     * function to find the shortest path
+     * between source vertex and destination vertex
+     * @param adj
+     * @param s
+     * @param dest
+     * @param v
+     * @return
+     */
     private static ArrayList<Integer> findShortestPath(ArrayList<ArrayList<Integer>> adj, int s, int dest, int v) {
 
         // predecessor[i] array stores predecessor of i
@@ -82,8 +100,16 @@ public class Path {
         return shortestPath;
     }
 
-    // a modified version of BFS that stores predecessor
-    // of each vertex in array pred
+    /**
+     * a modified version of BFS that stores predecessor
+     * of each vertex in array pred
+     * @param adj
+     * @param src
+     * @param dest
+     * @param v
+     * @param pred
+     * @return
+     */
     private static boolean BFS(ArrayList<ArrayList<Integer>> adj, int src, int dest, int v, int pred[]) {
         // a queue to maintain queue of vertices whose
         // adjacency list is to be scanned as per normal
