@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">ARNav Demo</string>
-    <string name="welcome_text">welcome to AR Navigator</string>
+    <string name="welcome_text">Welcome to AR Navigation</string>
     <string name="app_info">This app is created as a demostration
         showing the power of Beacon technology and Augmented Reality.
         \n\nThis app provides a tested and fully functional navigation
@@ -8,11 +8,11 @@
     <string name="continue_button">Continue</string>
     <string name="how_it_works_text">How it works?</string>
     <string name="guides_for_app" tools:ignore="StringEscaping">1.When the user launches the app, s/he will be prompted
-        to select their position from a predefined list. The list consists of all rooms in the space, where the appication
-        will be tested.\n\n2.Alternatively, the user can scan the QR code used to download the app. This is needed to immediately set their
-        position in the virtual world. Using such QR code is the most convenient way to ensure
+        to select a starting position from a predefined list. The list consists of rooms, where the position of the user is estimated.
+        \n\n2. Alternatively, the user can scan the QR code used to download the app. This is essential to immediately set their
+        position in the world. Using such QR code is the most convenient way to ensure
         the accuracy of the user position.\n\n3.After the initial position is set, the app
-        starts the ARsession. Therefore, the app and its minimap will react to user movements
+        starts the ARSession. Therefore, the app and its minimap will react to user movements
         seamlessly using visual-inertial odometry provided by ARCore.\n\n4.The user can choose
         a destination point from a predefined menu or enter it manually. The app searches
         for a vertex with the given ID and marks it as a destination point.\n\n5.The navigation
