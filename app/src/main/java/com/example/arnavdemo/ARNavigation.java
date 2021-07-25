@@ -32,14 +32,22 @@ import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 
+import java.lang.reflect.Array;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class ARNavigation extends AppCompatActivity implements SensorEventListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final double MIN_OPENGL_VERSION = 3.0;
+    private static final double CHECK_FOR_ARRIVAL = 4.0;
+    private static final double WRONG_DIRECTION = 4.0;
 
     private ArrayList<Integer> shortestPath = new ArrayList<>();
+    private UserLocation userLocation = new UserLocation();
+    private ArrayList<Integer> coordsOfDestinationId;
+    private ArrayList<Integer> coordsOfDestination;
 
     private CloudAnchorFragment mARFragment;
     private ModelRenderable mObjRenderable;
@@ -64,7 +72,7 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
             return;
         }
         ArrayList<Integer> coordsOfCurrentPos = getIntent().getIntegerArrayListExtra(DestinationActivity.COORDS_OF_CURRENT_POS);
-        ArrayList<Integer> coordsOfDestinationId = getIntent().getIntegerArrayListExtra(DestinationActivity.COORDS_OF_DESTINATION_ID);
+        coordsOfDestinationId = getIntent().getIntegerArrayListExtra(DestinationActivity.COORDS_OF_DESTINATION_ID);
         ArrayList<Integer> coordsOfEntrance = getIntent().getIntegerArrayListExtra(DestinationActivity.COORDS_OF_ENTRANCE);
         String selectDestinationFrom = DestinationActivity.SELECT_DESTINATION_FROM;
         String selectLocationFrom = CurrentLocationActivity.SELECT_LOCATION_FROM;
@@ -81,7 +89,7 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
             String from = getIntent().getExtras().getString(DestinationActivity.FROM);
             LocationFactory locationFactory = new LocationFactory();
             Location point = locationFactory.getLocation("DESTINATION", from);
-            ArrayList<Integer> coordsOfDestination = point.getCoordinates();
+            coordsOfDestination = point.getCoordinates();
             Path path = new Path(coordsOfEntrance.get(0), coordsOfDestination.get(0));
             shortestPath = path.createPath();
         }
@@ -89,7 +97,7 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
             String from = getIntent().getExtras().getString(DestinationActivity.FROM);
             LocationFactory locationFactory = new LocationFactory();
             Location point = locationFactory.getLocation("DESTINATION", from);
-            ArrayList<Integer> coordsOfDestination = point.getCoordinates();
+            coordsOfDestination = point.getCoordinates();
             Path path = new Path(coordsOfCurrentPos.get(0), coordsOfDestination.get(0));
             shortestPath = path.createPath();
         }
@@ -232,6 +240,8 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
 
 
     private void onSceneUpdate(FrameTime frameTime) {
+
+        Log.i(TAG, String.valueOf((orientationAngles[2])));
         // Let the fragment update its state first.
         mARFragment.onUpdate(frameTime);
 
@@ -245,27 +255,1400 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
             return;
         }
 
+
         // Place the anchor 1m in front of the camera if anchorNode is null.
         if (this.mAnchorNode == null) {
             addModelToScene();
         }
         else{
-            Vector3 cameraPos = mARFragment.getArSceneView().getScene().getCamera().getWorldPosition();
-            Vector3 cameraForward = mARFragment.getArSceneView().getScene().getCamera().getForward();
-            Vector3 position = Vector3.add(cameraPos, cameraForward.scaled(orientationAngles[2]));
-            Quaternion rotation = arrow.getLocalRotation();
-            Vector3 scale =  arrow.getWorldScale();
-            arrow.setLocalPosition(position);
-            arrow.setLocalRotation(rotation);
-            arrow.setLocalScale(scale);
-            arrow.setParent(mAnchorNode);
-            arrow.setRenderable(mObjRenderable);
+            directUser();
+
+        }
+    }
+
+    private void directUser() {
+//
+//        Vector3 cameraPos = mARFragment.getArSceneView().getScene().getCamera().getWorldPosition();
+//        Vector3 cameraForward = mARFragment.getArSceneView().getScene().getCamera().getForward();
+//        Vector3 position = Vector3.add(cameraPos, cameraForward.scaled((float)Math.round(orientationAngles[2] * 10f) / 10f));
+        Quaternion rotation = arrow.getLocalRotation();
+//        Vector3 scale =  arrow.getWorldScale();
+//        arrow.setLocalPosition(position);
+//        arrow.setLocalRotation(rotation);
+//        arrow.setLocalScale(scale);
+//        arrow.setParent(mAnchorNode);
+//        arrow.setRenderable(mObjRenderable);
 
 
 //            arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(1.0f, 0.0f, 0.0f), 45.0f)); // back
 //            arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
 //            arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+
+
+        // ΜΠΛΕΚΑΣ ------ ΒΛΑΧΟΣ
+        if (shortestPath.get(0) == 1 && shortestPath.get(1) == 2) {
+
+            // forward - right
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(2);  // ΕΔΩ ΑΠΟΘΗΚΕΥΩ ΤΙΣ ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΠΟΥ ΘΑ ΤΟΠΟΘΕΤΕΙΤΑΙ ΤΟ OBJECT. ΤΙΣ ΠΗΡΑ ΚΑΝΟΝΤΑΣ MAPPING ΣΤΗΝ ΕΙΚΟΝΑ.
+            for (int i = 0; i < 2; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(0);
+            pointsToBePlacedObject.get(0).add(0);
+            pointsToBePlacedObject.get(1).add(1);
+            pointsToBePlacedObject.get(1).add(1);
+
+            // ΔΥΟ ΕΜΦΑΝΙΣΕΙΣ ΤΟΥ ΒΕΛΟΣ(ΕΥΘΕΙΑ, ΔΕΞΙΑ)
+            for (int i = 0; i < 2; i++) {
+                double[] previousUserLocation = userLocation.calculatedPosition;
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0), pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 0) {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                else {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+
+                double[] currentPosition = userLocation.calculatedPosition;
+                while (previousUserLocation == currentPosition) { // αυτο γίνεται ώστε η επόμενη εμφανιση του object να γίνει αφού κινειθεί ο χρήστης, καθώς διαφορετικά ισώς να εμαφανίζονται διαδοχικά(γρηγορα) τα βέλοι, κάτι το οποίο δεν θέλουμε
+                    // wait
+                    currentPosition = userLocation.calculatedPosition;
+                }
+                if (Math.abs(currentPosition[0] - pointsToBePlacedObject.get(i).get(0)) > WRONG_DIRECTION && Math.abs(currentPosition[1] - pointsToBePlacedObject.get(i).get(1)) > WRONG_DIRECTION) {
+                    // ΕΜΦΑΝΙΣΕ ΚΑΤΙ ΠΟΥ ΝΑ ΤΟΥ ΕΞΗΓΕΙ ΟΤΙ ΚΙΝΕΙΤΑΙ ΛΑΘΟΣ
+                }
+            }
+            double[] currentPosition = userLocation.calculatedPosition;
+            if (DestinationActivity.SELECT_DESTINATION_FROM == "fromMenu") { // ΣΗΜΕΙΩΣΗ : ΟΙ ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΠΟΥ ΑΠΟΘΗΚΕΥΟΥΝ ΤΑ coordsOfDestination/coordsOfDestinationId ΘΑ ΑΛΛΑΞΟΥΝ ΩΣΤΕ ΝΑ ΑΠΟΘΗΚΕΥΟΥΝ ΜΟΝΟ ΕΝΑ ΣΗΜΕΙΟ, ΑΥΤΟ ΕΞΩ ΑΚΡΙΒΩΣ ΑΠΟ ΤΗΝ ΠΟΡΤΑ ΤΟΥ ΠΡΟΟΡΙΣΜΟΥ ΚΑΙ ΟΧΙ ΠΟΛΥΓΩΝΟ ΟΠΩΣ ΑΠΟΘΗΚΕΥΟΥΝ ΤΩΡΑ. ΣΥΜΦΩΝΕΙΣ?
+                if (Math.abs(coordsOfDestination.get(1) - currentPosition[0]) < CHECK_FOR_ARRIVAL && Math.abs(coordsOfDestination.get(2) - currentPosition[1]) < CHECK_FOR_ARRIVAL) {
+                    // ARObject pin point
+                }
+            }
+            else {
+                if (Math.abs(coordsOfDestinationId.get(1) - currentPosition[0]) < CHECK_FOR_ARRIVAL && Math.abs(coordsOfDestinationId.get(2) - currentPosition[1]) < CHECK_FOR_ARRIVAL) {
+                    // ARObject pin point
+                }
+            }
         }
+        else if (shortestPath.get(0) == 2 && shortestPath.get(1) == 1) {
+
+            // left - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(2);
+            for (int i = 0; i < 2; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(390);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(370);
+            pointsToBePlacedObject.get(1).add(229);
+            for (int i = 0; i < 2; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 0) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+
+            }
+
+        }
+        else if (shortestPath.get(0) == 1 && shortestPath.get(1) == 3) {
+
+            // forward - forward - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(3);
+            for (int i = 0; i < 3; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(370);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(390);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(416);
+            pointsToBePlacedObject.get(2).add(229);
+            for (int i = 0; i < 3; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                arrow.setLocalRotation(rotation); //forward
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 3 && shortestPath.get(1) == 1) {
+
+            // forward - forward - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(3);
+            for (int i = 0; i < 3; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(416);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(390);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(370);
+            pointsToBePlacedObject.get(2).add(229);
+            for (int i = 0; i < 3; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                arrow.setLocalRotation(rotation); //forward
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 1 && shortestPath.get(1) == 4) {
+
+            // forward - left - forward - right - forward - .. forward - right - forward - right - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(19);
+            for (int i = 0; i < 19; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(370);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(390);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(218);
+            pointsToBePlacedObject.get(3).add(391);
+            pointsToBePlacedObject.get(3).add(199);
+            pointsToBePlacedObject.get(4).add(426);
+            pointsToBePlacedObject.get(4).add(200);
+            pointsToBePlacedObject.get(5).add(463);
+            pointsToBePlacedObject.get(5).add(201);
+            pointsToBePlacedObject.get(6).add(511);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(550);
+            pointsToBePlacedObject.get(7).add(199);
+            pointsToBePlacedObject.get(8).add(600);
+            pointsToBePlacedObject.get(8).add(197);
+            pointsToBePlacedObject.get(9).add(653);
+            pointsToBePlacedObject.get(9).add(194);
+            pointsToBePlacedObject.get(10).add(690);
+            pointsToBePlacedObject.get(10).add(191);
+            pointsToBePlacedObject.get(11).add(740);
+            pointsToBePlacedObject.get(11).add(194);
+            pointsToBePlacedObject.get(12).add(786);
+            pointsToBePlacedObject.get(12).add(195);
+            pointsToBePlacedObject.get(13).add(831);
+            pointsToBePlacedObject.get(13).add(199);
+            pointsToBePlacedObject.get(14).add(889);
+            pointsToBePlacedObject.get(14).add(202);
+            pointsToBePlacedObject.get(15).add(928);
+            pointsToBePlacedObject.get(15).add(199);
+            pointsToBePlacedObject.get(16).add(929);
+            pointsToBePlacedObject.get(16).add(217);
+            pointsToBePlacedObject.get(17).add(928);
+            pointsToBePlacedObject.get(17).add(229);
+            pointsToBePlacedObject.get(18).add(908);
+            pointsToBePlacedObject.get(18).add(229);
+            for (int i = 0; i < 19; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 1) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else if (i == 3 || i == 15 || i == 17) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 4 && shortestPath.get(1) == 1) {
+
+            // forward - left - forward - left - forward - .. forward - left - forward - right - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(19);
+            for (int i = 0; i < 19; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(370);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(390);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(218);
+            pointsToBePlacedObject.get(3).add(391);
+            pointsToBePlacedObject.get(3).add(199);
+            pointsToBePlacedObject.get(4).add(426);
+            pointsToBePlacedObject.get(4).add(200);
+            pointsToBePlacedObject.get(5).add(463);
+            pointsToBePlacedObject.get(5).add(201);
+            pointsToBePlacedObject.get(6).add(511);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(550);
+            pointsToBePlacedObject.get(7).add(199);
+            pointsToBePlacedObject.get(8).add(600);
+            pointsToBePlacedObject.get(8).add(197);
+            pointsToBePlacedObject.get(9).add(653);
+            pointsToBePlacedObject.get(9).add(194);
+            pointsToBePlacedObject.get(10).add(690);
+            pointsToBePlacedObject.get(10).add(191);
+            pointsToBePlacedObject.get(11).add(740);
+            pointsToBePlacedObject.get(11).add(194);
+            pointsToBePlacedObject.get(12).add(786);
+            pointsToBePlacedObject.get(12).add(195);
+            pointsToBePlacedObject.get(13).add(831);
+            pointsToBePlacedObject.get(13).add(199);
+            pointsToBePlacedObject.get(14).add(889);
+            pointsToBePlacedObject.get(14).add(202);
+            pointsToBePlacedObject.get(15).add(928);
+            pointsToBePlacedObject.get(15).add(199);
+            pointsToBePlacedObject.get(16).add(929);
+            pointsToBePlacedObject.get(16).add(217);
+            pointsToBePlacedObject.get(17).add(928);
+            pointsToBePlacedObject.get(17).add(229);
+            pointsToBePlacedObject.get(18).add(908);
+            pointsToBePlacedObject.get(18).add(229);
+            for (int i = 18; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 1) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else if (i == 3 || i == 15 || i == 17) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+
+
+        else if (shortestPath.get(0) == 1 && shortestPath.get(1) == 5) {
+
+            // forward - left - forward - right - forward - .. forward - right - forward - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(18);
+            for (int i = 0; i < 18; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(370);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(390);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(218);
+            pointsToBePlacedObject.get(3).add(391);
+            pointsToBePlacedObject.get(3).add(199);
+            pointsToBePlacedObject.get(4).add(426);
+            pointsToBePlacedObject.get(4).add(200);
+            pointsToBePlacedObject.get(5).add(463);
+            pointsToBePlacedObject.get(5).add(201);
+            pointsToBePlacedObject.get(6).add(511);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(550);
+            pointsToBePlacedObject.get(7).add(199);
+            pointsToBePlacedObject.get(8).add(600);
+            pointsToBePlacedObject.get(8).add(197);
+            pointsToBePlacedObject.get(9).add(653);
+            pointsToBePlacedObject.get(9).add(194);
+            pointsToBePlacedObject.get(10).add(690);
+            pointsToBePlacedObject.get(10).add(191);
+            pointsToBePlacedObject.get(11).add(740);
+            pointsToBePlacedObject.get(11).add(194);
+            pointsToBePlacedObject.get(12).add(786);
+            pointsToBePlacedObject.get(12).add(195);
+            pointsToBePlacedObject.get(13).add(831);
+            pointsToBePlacedObject.get(13).add(199);
+            pointsToBePlacedObject.get(14).add(889);
+            pointsToBePlacedObject.get(14).add(202);
+            pointsToBePlacedObject.get(15).add(928);
+            pointsToBePlacedObject.get(15).add(199);
+            pointsToBePlacedObject.get(16).add(929);
+            pointsToBePlacedObject.get(16).add(217);
+            pointsToBePlacedObject.get(17).add(928);
+            pointsToBePlacedObject.get(17).add(229);
+            for (int i = 0; i < 18; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 1) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else if (i == 3 || i == 15 ) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+
+        }
+        else if (shortestPath.get(0) == 5 && shortestPath.get(1) == 1) {
+
+            // forward - forward - left - forward - .. forward - left - forward - right - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(18);
+            for (int i = 0; i < 18; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(370);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(390);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(218);
+            pointsToBePlacedObject.get(3).add(391);
+            pointsToBePlacedObject.get(3).add(199);
+            pointsToBePlacedObject.get(4).add(426);
+            pointsToBePlacedObject.get(4).add(200);
+            pointsToBePlacedObject.get(5).add(463);
+            pointsToBePlacedObject.get(5).add(201);
+            pointsToBePlacedObject.get(6).add(511);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(550);
+            pointsToBePlacedObject.get(7).add(199);
+            pointsToBePlacedObject.get(8).add(600);
+            pointsToBePlacedObject.get(8).add(197);
+            pointsToBePlacedObject.get(9).add(653);
+            pointsToBePlacedObject.get(9).add(194);
+            pointsToBePlacedObject.get(10).add(690);
+            pointsToBePlacedObject.get(10).add(191);
+            pointsToBePlacedObject.get(11).add(740);
+            pointsToBePlacedObject.get(11).add(194);
+            pointsToBePlacedObject.get(12).add(786);
+            pointsToBePlacedObject.get(12).add(195);
+            pointsToBePlacedObject.get(13).add(831);
+            pointsToBePlacedObject.get(13).add(199);
+            pointsToBePlacedObject.get(14).add(889);
+            pointsToBePlacedObject.get(14).add(202);
+            pointsToBePlacedObject.get(15).add(928);
+            pointsToBePlacedObject.get(15).add(199);
+            pointsToBePlacedObject.get(16).add(929);
+            pointsToBePlacedObject.get(16).add(217);
+            pointsToBePlacedObject.get(17).add(928);
+            pointsToBePlacedObject.get(17).add(229);
+            for (int i = 17; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 1) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else if (i == 3 || i == 15 ) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 1 && shortestPath.get(1) == 6) {
+
+            // forward - left - forward - right - forward - .. forward - right - forward - left - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(19);
+            for (int i = 0; i < 19; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(370);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(390);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(218);
+            pointsToBePlacedObject.get(3).add(391);
+            pointsToBePlacedObject.get(3).add(199);
+            pointsToBePlacedObject.get(4).add(426);
+            pointsToBePlacedObject.get(4).add(200);
+            pointsToBePlacedObject.get(5).add(463);
+            pointsToBePlacedObject.get(5).add(201);
+            pointsToBePlacedObject.get(6).add(511);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(550);
+            pointsToBePlacedObject.get(7).add(199);
+            pointsToBePlacedObject.get(8).add(600);
+            pointsToBePlacedObject.get(8).add(197);
+            pointsToBePlacedObject.get(9).add(653);
+            pointsToBePlacedObject.get(9).add(194);
+            pointsToBePlacedObject.get(10).add(690);
+            pointsToBePlacedObject.get(10).add(191);
+            pointsToBePlacedObject.get(11).add(740);
+            pointsToBePlacedObject.get(11).add(194);
+            pointsToBePlacedObject.get(12).add(786);
+            pointsToBePlacedObject.get(12).add(195);
+            pointsToBePlacedObject.get(13).add(831);
+            pointsToBePlacedObject.get(13).add(199);
+            pointsToBePlacedObject.get(14).add(889);
+            pointsToBePlacedObject.get(14).add(202);
+            pointsToBePlacedObject.get(15).add(928);
+            pointsToBePlacedObject.get(15).add(199);
+            pointsToBePlacedObject.get(16).add(929);
+            pointsToBePlacedObject.get(16).add(217);
+            pointsToBePlacedObject.get(17).add(928);
+            pointsToBePlacedObject.get(17).add(229);
+            pointsToBePlacedObject.get(18).add(908);
+            pointsToBePlacedObject.get(18).add(229);
+            for (int i = 0; i < 19; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 1 || i == 17) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else if (i == 3 || i == 15) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 6 && shortestPath.get(1) == 1) {
+
+            // forward - right - forward - left - forward - .. forward - left - forward - right - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(19);
+            for (int i = 0; i < 19; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(370);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(390);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(218);
+            pointsToBePlacedObject.get(3).add(391);
+            pointsToBePlacedObject.get(3).add(199);
+            pointsToBePlacedObject.get(4).add(426);
+            pointsToBePlacedObject.get(4).add(200);
+            pointsToBePlacedObject.get(5).add(463);
+            pointsToBePlacedObject.get(5).add(201);
+            pointsToBePlacedObject.get(6).add(511);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(550);
+            pointsToBePlacedObject.get(7).add(199);
+            pointsToBePlacedObject.get(8).add(600);
+            pointsToBePlacedObject.get(8).add(197);
+            pointsToBePlacedObject.get(9).add(653);
+            pointsToBePlacedObject.get(9).add(194);
+            pointsToBePlacedObject.get(10).add(690);
+            pointsToBePlacedObject.get(10).add(191);
+            pointsToBePlacedObject.get(11).add(740);
+            pointsToBePlacedObject.get(11).add(194);
+            pointsToBePlacedObject.get(12).add(786);
+            pointsToBePlacedObject.get(12).add(195);
+            pointsToBePlacedObject.get(13).add(831);
+            pointsToBePlacedObject.get(13).add(199);
+            pointsToBePlacedObject.get(14).add(889);
+            pointsToBePlacedObject.get(14).add(202);
+            pointsToBePlacedObject.get(15).add(928);
+            pointsToBePlacedObject.get(15).add(199);
+            pointsToBePlacedObject.get(16).add(929);
+            pointsToBePlacedObject.get(16).add(217);
+            pointsToBePlacedObject.get(17).add(928);
+            pointsToBePlacedObject.get(17).add(229);
+            pointsToBePlacedObject.get(18).add(908);
+            pointsToBePlacedObject.get(18).add(229);
+            for (int i = 18; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 1 || i == 17) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else if (i == 3 || i == 15) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+
+        }
+        else if (shortestPath.get(0) == 2 && shortestPath.get(1) == 3) {
+
+            // right - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(2);
+            for (int i = 0; i < 2; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(392);
+            pointsToBePlacedObject.get(0).add(228);
+            pointsToBePlacedObject.get(1).add(413);
+            pointsToBePlacedObject.get(1).add(229);
+            for (int i = 0; i < 2; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 0) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+
+            }
+
+        }
+        else if (shortestPath.get(0) == 3 && shortestPath.get(1) == 2) {
+
+            // forward - left
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(2);
+            for (int i = 0; i < 2; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(392);
+            pointsToBePlacedObject.get(0).add(228);
+            pointsToBePlacedObject.get(1).add(413);
+            pointsToBePlacedObject.get(1).add(229);
+            for (int i = 1; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 0) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+
+            }
+
+        }
+        else if (shortestPath.get(0) == 2 && shortestPath.get(1) == 4) {
+
+            // forward - forward - right - forward - .. forward - right - forward - right - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(18);
+            for (int i = 0; i < 18; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(390);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(391);
+            pointsToBePlacedObject.get(1).add(218);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(199);
+            pointsToBePlacedObject.get(3).add(426);
+            pointsToBePlacedObject.get(3).add(200);
+            pointsToBePlacedObject.get(4).add(463);
+            pointsToBePlacedObject.get(4).add(201);
+            pointsToBePlacedObject.get(5).add(511);
+            pointsToBePlacedObject.get(5).add(199);
+            pointsToBePlacedObject.get(6).add(550);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(600);
+            pointsToBePlacedObject.get(7).add(197);
+            pointsToBePlacedObject.get(8).add(653);
+            pointsToBePlacedObject.get(8).add(194);
+            pointsToBePlacedObject.get(9).add(690);
+            pointsToBePlacedObject.get(9).add(191);
+            pointsToBePlacedObject.get(10).add(740);
+            pointsToBePlacedObject.get(10).add(194);
+            pointsToBePlacedObject.get(11).add(786);
+            pointsToBePlacedObject.get(11).add(195);
+            pointsToBePlacedObject.get(12).add(831);
+            pointsToBePlacedObject.get(12).add(199);
+            pointsToBePlacedObject.get(13).add(889);
+            pointsToBePlacedObject.get(13).add(202);
+            pointsToBePlacedObject.get(14).add(928);
+            pointsToBePlacedObject.get(14).add(199);
+            pointsToBePlacedObject.get(15).add(929);
+            pointsToBePlacedObject.get(15).add(217);
+            pointsToBePlacedObject.get(16).add(928);
+            pointsToBePlacedObject.get(16).add(229);
+            pointsToBePlacedObject.get(17).add(908);
+            pointsToBePlacedObject.get(17).add(229);
+            for (int i = 0; i < 18; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 2 || i == 14 || i == 16) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+
+
+        }
+        else if (shortestPath.get(0) == 4 && shortestPath.get(1) == 2) {
+
+            // forward - left - forward - left - forward -  .. forward - left - forward  - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(18);
+            for (int i = 0; i < 18; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(390);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(391);
+            pointsToBePlacedObject.get(1).add(218);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(199);
+            pointsToBePlacedObject.get(3).add(426);
+            pointsToBePlacedObject.get(3).add(200);
+            pointsToBePlacedObject.get(4).add(463);
+            pointsToBePlacedObject.get(4).add(201);
+            pointsToBePlacedObject.get(5).add(511);
+            pointsToBePlacedObject.get(5).add(199);
+            pointsToBePlacedObject.get(6).add(550);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(600);
+            pointsToBePlacedObject.get(7).add(197);
+            pointsToBePlacedObject.get(8).add(653);
+            pointsToBePlacedObject.get(8).add(194);
+            pointsToBePlacedObject.get(9).add(690);
+            pointsToBePlacedObject.get(9).add(191);
+            pointsToBePlacedObject.get(10).add(740);
+            pointsToBePlacedObject.get(10).add(194);
+            pointsToBePlacedObject.get(11).add(786);
+            pointsToBePlacedObject.get(11).add(195);
+            pointsToBePlacedObject.get(12).add(831);
+            pointsToBePlacedObject.get(12).add(199);
+            pointsToBePlacedObject.get(13).add(889);
+            pointsToBePlacedObject.get(13).add(202);
+            pointsToBePlacedObject.get(14).add(928);
+            pointsToBePlacedObject.get(14).add(199);
+            pointsToBePlacedObject.get(15).add(929);
+            pointsToBePlacedObject.get(15).add(217);
+            pointsToBePlacedObject.get(16).add(928);
+            pointsToBePlacedObject.get(16).add(229);
+            pointsToBePlacedObject.get(17).add(908);
+            pointsToBePlacedObject.get(17).add(229);
+            for (int i = 17; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 2 || i == 14 || i == 16) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 2 && shortestPath.get(1) == 5) {
+
+            // forward - forward - right - forward - .. forward - right - forward - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(17);
+            for (int i = 0; i < 17; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(390);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(391);
+            pointsToBePlacedObject.get(1).add(218);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(199);
+            pointsToBePlacedObject.get(3).add(426);
+            pointsToBePlacedObject.get(3).add(200);
+            pointsToBePlacedObject.get(4).add(463);
+            pointsToBePlacedObject.get(4).add(201);
+            pointsToBePlacedObject.get(5).add(511);
+            pointsToBePlacedObject.get(5).add(199);
+            pointsToBePlacedObject.get(6).add(550);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(600);
+            pointsToBePlacedObject.get(7).add(197);
+            pointsToBePlacedObject.get(8).add(653);
+            pointsToBePlacedObject.get(8).add(194);
+            pointsToBePlacedObject.get(9).add(690);
+            pointsToBePlacedObject.get(9).add(191);
+            pointsToBePlacedObject.get(10).add(740);
+            pointsToBePlacedObject.get(10).add(194);
+            pointsToBePlacedObject.get(11).add(786);
+            pointsToBePlacedObject.get(11).add(195);
+            pointsToBePlacedObject.get(12).add(831);
+            pointsToBePlacedObject.get(12).add(199);
+            pointsToBePlacedObject.get(13).add(889);
+            pointsToBePlacedObject.get(13).add(202);
+            pointsToBePlacedObject.get(14).add(928);
+            pointsToBePlacedObject.get(14).add(199);
+            pointsToBePlacedObject.get(15).add(929);
+            pointsToBePlacedObject.get(15).add(217);
+            pointsToBePlacedObject.get(16).add(928);
+            pointsToBePlacedObject.get(16).add(229);
+            for (int i = 0; i < 17; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 2 || i == 14 ) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+
+        }
+        else if (shortestPath.get(0) == 5 && shortestPath.get(1) == 2) {
+
+            // forward - forward - left - forward - .. forward - left - forward - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(17);
+            for (int i = 0; i < 17; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(390);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(391);
+            pointsToBePlacedObject.get(1).add(218);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(199);
+            pointsToBePlacedObject.get(3).add(426);
+            pointsToBePlacedObject.get(3).add(200);
+            pointsToBePlacedObject.get(4).add(463);
+            pointsToBePlacedObject.get(4).add(201);
+            pointsToBePlacedObject.get(5).add(511);
+            pointsToBePlacedObject.get(5).add(199);
+            pointsToBePlacedObject.get(6).add(550);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(600);
+            pointsToBePlacedObject.get(7).add(197);
+            pointsToBePlacedObject.get(8).add(653);
+            pointsToBePlacedObject.get(8).add(194);
+            pointsToBePlacedObject.get(9).add(690);
+            pointsToBePlacedObject.get(9).add(191);
+            pointsToBePlacedObject.get(10).add(740);
+            pointsToBePlacedObject.get(10).add(194);
+            pointsToBePlacedObject.get(11).add(786);
+            pointsToBePlacedObject.get(11).add(195);
+            pointsToBePlacedObject.get(12).add(831);
+            pointsToBePlacedObject.get(12).add(199);
+            pointsToBePlacedObject.get(13).add(889);
+            pointsToBePlacedObject.get(13).add(202);
+            pointsToBePlacedObject.get(14).add(928);
+            pointsToBePlacedObject.get(14).add(199);
+            pointsToBePlacedObject.get(15).add(929);
+            pointsToBePlacedObject.get(15).add(217);
+            pointsToBePlacedObject.get(16).add(928);
+            pointsToBePlacedObject.get(16).add(229);
+            for (int i = 16; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 2 || i == 14 ) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 2 && shortestPath.get(1) == 6) {
+
+            // forward - forward - right - forward - .. forward - right - forward - left - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(18);
+            for (int i = 0; i < 18; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(390);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(391);
+            pointsToBePlacedObject.get(1).add(218);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(199);
+            pointsToBePlacedObject.get(3).add(426);
+            pointsToBePlacedObject.get(3).add(200);
+            pointsToBePlacedObject.get(4).add(463);
+            pointsToBePlacedObject.get(4).add(201);
+            pointsToBePlacedObject.get(5).add(511);
+            pointsToBePlacedObject.get(5).add(199);
+            pointsToBePlacedObject.get(6).add(550);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(600);
+            pointsToBePlacedObject.get(7).add(197);
+            pointsToBePlacedObject.get(8).add(653);
+            pointsToBePlacedObject.get(8).add(194);
+            pointsToBePlacedObject.get(9).add(690);
+            pointsToBePlacedObject.get(9).add(191);
+            pointsToBePlacedObject.get(10).add(740);
+            pointsToBePlacedObject.get(10).add(194);
+            pointsToBePlacedObject.get(11).add(786);
+            pointsToBePlacedObject.get(11).add(195);
+            pointsToBePlacedObject.get(12).add(831);
+            pointsToBePlacedObject.get(12).add(199);
+            pointsToBePlacedObject.get(13).add(889);
+            pointsToBePlacedObject.get(13).add(202);
+            pointsToBePlacedObject.get(14).add(928);
+            pointsToBePlacedObject.get(14).add(199);
+            pointsToBePlacedObject.get(15).add(929);
+            pointsToBePlacedObject.get(15).add(217);
+            pointsToBePlacedObject.get(16).add(928);
+            pointsToBePlacedObject.get(16).add(229);
+            pointsToBePlacedObject.get(17).add(908);
+            pointsToBePlacedObject.get(17).add(229);
+            for (int i = 0; i < 18; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 16) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else if (i == 2 || i == 14) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 6 && shortestPath.get(1) == 2) {
+
+            // forward - right - forward - left - forward - .. forward - left - forward - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(18);
+            for (int i = 0; i < 18; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(390);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(391);
+            pointsToBePlacedObject.get(1).add(218);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(199);
+            pointsToBePlacedObject.get(3).add(426);
+            pointsToBePlacedObject.get(3).add(200);
+            pointsToBePlacedObject.get(4).add(463);
+            pointsToBePlacedObject.get(4).add(201);
+            pointsToBePlacedObject.get(5).add(511);
+            pointsToBePlacedObject.get(5).add(199);
+            pointsToBePlacedObject.get(6).add(550);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(600);
+            pointsToBePlacedObject.get(7).add(197);
+            pointsToBePlacedObject.get(8).add(653);
+            pointsToBePlacedObject.get(8).add(194);
+            pointsToBePlacedObject.get(9).add(690);
+            pointsToBePlacedObject.get(9).add(191);
+            pointsToBePlacedObject.get(10).add(740);
+            pointsToBePlacedObject.get(10).add(194);
+            pointsToBePlacedObject.get(11).add(786);
+            pointsToBePlacedObject.get(11).add(195);
+            pointsToBePlacedObject.get(12).add(831);
+            pointsToBePlacedObject.get(12).add(199);
+            pointsToBePlacedObject.get(13).add(889);
+            pointsToBePlacedObject.get(13).add(202);
+            pointsToBePlacedObject.get(14).add(928);
+            pointsToBePlacedObject.get(14).add(199);
+            pointsToBePlacedObject.get(15).add(929);
+            pointsToBePlacedObject.get(15).add(217);
+            pointsToBePlacedObject.get(16).add(928);
+            pointsToBePlacedObject.get(16).add(229);
+            pointsToBePlacedObject.get(17).add(908);
+            pointsToBePlacedObject.get(17).add(229);
+            for (int i = 17; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 16) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else if (i == 2 || i == 14) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 3 && shortestPath.get(1) == 4) {
+
+            // forward - right - forward - right - forward - .. forward - right - forward - right - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(19);
+            for (int i = 0; i < 19; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(392);
+            pointsToBePlacedObject.get(0).add(228);
+            pointsToBePlacedObject.get(1).add(413);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(218);
+            pointsToBePlacedObject.get(3).add(391);
+            pointsToBePlacedObject.get(3).add(199);
+            pointsToBePlacedObject.get(4).add(426);
+            pointsToBePlacedObject.get(4).add(200);
+            pointsToBePlacedObject.get(5).add(463);
+            pointsToBePlacedObject.get(5).add(201);
+            pointsToBePlacedObject.get(6).add(511);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(550);
+            pointsToBePlacedObject.get(7).add(199);
+            pointsToBePlacedObject.get(8).add(600);
+            pointsToBePlacedObject.get(8).add(197);
+            pointsToBePlacedObject.get(9).add(653);
+            pointsToBePlacedObject.get(9).add(194);
+            pointsToBePlacedObject.get(10).add(690);
+            pointsToBePlacedObject.get(10).add(191);
+            pointsToBePlacedObject.get(11).add(740);
+            pointsToBePlacedObject.get(11).add(194);
+            pointsToBePlacedObject.get(12).add(786);
+            pointsToBePlacedObject.get(12).add(195);
+            pointsToBePlacedObject.get(13).add(831);
+            pointsToBePlacedObject.get(13).add(199);
+            pointsToBePlacedObject.get(14).add(889);
+            pointsToBePlacedObject.get(14).add(202);
+            pointsToBePlacedObject.get(15).add(928);
+            pointsToBePlacedObject.get(15).add(199);
+            pointsToBePlacedObject.get(16).add(929);
+            pointsToBePlacedObject.get(16).add(217);
+            pointsToBePlacedObject.get(17).add(928);
+            pointsToBePlacedObject.get(17).add(229);
+            pointsToBePlacedObject.get(18).add(908);
+            pointsToBePlacedObject.get(18).add(229);
+            for (int i = 0; i < 19; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 1 || i == 3 || i == 15 || i == 17) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 4 && shortestPath.get(1) == 3) {
+
+            // forward - left - forward - left - forward - .. forward - left - forward - left - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(19);
+            for (int i = 0; i < 19; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(392);
+            pointsToBePlacedObject.get(0).add(228);
+            pointsToBePlacedObject.get(1).add(413);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(218);
+            pointsToBePlacedObject.get(3).add(391);
+            pointsToBePlacedObject.get(3).add(199);
+            pointsToBePlacedObject.get(4).add(426);
+            pointsToBePlacedObject.get(4).add(200);
+            pointsToBePlacedObject.get(5).add(463);
+            pointsToBePlacedObject.get(5).add(201);
+            pointsToBePlacedObject.get(6).add(511);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(550);
+            pointsToBePlacedObject.get(7).add(199);
+            pointsToBePlacedObject.get(8).add(600);
+            pointsToBePlacedObject.get(8).add(197);
+            pointsToBePlacedObject.get(9).add(653);
+            pointsToBePlacedObject.get(9).add(194);
+            pointsToBePlacedObject.get(10).add(690);
+            pointsToBePlacedObject.get(10).add(191);
+            pointsToBePlacedObject.get(11).add(740);
+            pointsToBePlacedObject.get(11).add(194);
+            pointsToBePlacedObject.get(12).add(786);
+            pointsToBePlacedObject.get(12).add(195);
+            pointsToBePlacedObject.get(13).add(831);
+            pointsToBePlacedObject.get(13).add(199);
+            pointsToBePlacedObject.get(14).add(889);
+            pointsToBePlacedObject.get(14).add(202);
+            pointsToBePlacedObject.get(15).add(928);
+            pointsToBePlacedObject.get(15).add(199);
+            pointsToBePlacedObject.get(16).add(929);
+            pointsToBePlacedObject.get(16).add(217);
+            pointsToBePlacedObject.get(17).add(928);
+            pointsToBePlacedObject.get(17).add(229);
+            pointsToBePlacedObject.get(18).add(908);
+            pointsToBePlacedObject.get(18).add(229);
+            for (int i = 18; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 1 || i == 3 || i == 15 || i == 17) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 3 && shortestPath.get(1) == 5) {
+
+            // forward - right - forward - right - forward - .. forward - right - forward - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(18);
+            for (int i = 0; i < 18; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(392);
+            pointsToBePlacedObject.get(0).add(228);
+            pointsToBePlacedObject.get(1).add(413);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(218);
+            pointsToBePlacedObject.get(3).add(391);
+            pointsToBePlacedObject.get(3).add(199);
+            pointsToBePlacedObject.get(4).add(426);
+            pointsToBePlacedObject.get(4).add(200);
+            pointsToBePlacedObject.get(5).add(463);
+            pointsToBePlacedObject.get(5).add(201);
+            pointsToBePlacedObject.get(6).add(511);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(550);
+            pointsToBePlacedObject.get(7).add(199);
+            pointsToBePlacedObject.get(8).add(600);
+            pointsToBePlacedObject.get(8).add(197);
+            pointsToBePlacedObject.get(9).add(653);
+            pointsToBePlacedObject.get(9).add(194);
+            pointsToBePlacedObject.get(10).add(690);
+            pointsToBePlacedObject.get(10).add(191);
+            pointsToBePlacedObject.get(11).add(740);
+            pointsToBePlacedObject.get(11).add(194);
+            pointsToBePlacedObject.get(12).add(786);
+            pointsToBePlacedObject.get(12).add(195);
+            pointsToBePlacedObject.get(13).add(831);
+            pointsToBePlacedObject.get(13).add(199);
+            pointsToBePlacedObject.get(14).add(889);
+            pointsToBePlacedObject.get(14).add(202);
+            pointsToBePlacedObject.get(15).add(928);
+            pointsToBePlacedObject.get(15).add(199);
+            pointsToBePlacedObject.get(16).add(929);
+            pointsToBePlacedObject.get(16).add(217);
+            pointsToBePlacedObject.get(17).add(928);
+            pointsToBePlacedObject.get(17).add(229);
+            for (int i = 0; i < 18; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 1 || i == 3 || i == 15) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 5 && shortestPath.get(1) == 3) {
+
+            // forward - forward - left - forward - .. forward - left - forward - left - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(18);
+            for (int i = 0; i < 18; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(392);
+            pointsToBePlacedObject.get(0).add(228);
+            pointsToBePlacedObject.get(1).add(413);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(218);
+            pointsToBePlacedObject.get(3).add(391);
+            pointsToBePlacedObject.get(3).add(199);
+            pointsToBePlacedObject.get(4).add(426);
+            pointsToBePlacedObject.get(4).add(200);
+            pointsToBePlacedObject.get(5).add(463);
+            pointsToBePlacedObject.get(5).add(201);
+            pointsToBePlacedObject.get(6).add(511);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(550);
+            pointsToBePlacedObject.get(7).add(199);
+            pointsToBePlacedObject.get(8).add(600);
+            pointsToBePlacedObject.get(8).add(197);
+            pointsToBePlacedObject.get(9).add(653);
+            pointsToBePlacedObject.get(9).add(194);
+            pointsToBePlacedObject.get(10).add(690);
+            pointsToBePlacedObject.get(10).add(191);
+            pointsToBePlacedObject.get(11).add(740);
+            pointsToBePlacedObject.get(11).add(194);
+            pointsToBePlacedObject.get(12).add(786);
+            pointsToBePlacedObject.get(12).add(195);
+            pointsToBePlacedObject.get(13).add(831);
+            pointsToBePlacedObject.get(13).add(199);
+            pointsToBePlacedObject.get(14).add(889);
+            pointsToBePlacedObject.get(14).add(202);
+            pointsToBePlacedObject.get(15).add(928);
+            pointsToBePlacedObject.get(15).add(199);
+            pointsToBePlacedObject.get(16).add(929);
+            pointsToBePlacedObject.get(16).add(217);
+            pointsToBePlacedObject.get(17).add(928);
+            pointsToBePlacedObject.get(17).add(229);
+            for (int i = 17 ; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 1 || i == 3 || i == 15) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 3 && shortestPath.get(1) == 6) {
+
+            // forward - right - forward - right - forward - .. forward - right - forward - left - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(19);
+            for (int i = 0; i < 19; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(413);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(390);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(218);
+            pointsToBePlacedObject.get(3).add(391);
+            pointsToBePlacedObject.get(3).add(199);
+            pointsToBePlacedObject.get(4).add(426);
+            pointsToBePlacedObject.get(4).add(200);
+            pointsToBePlacedObject.get(5).add(463);
+            pointsToBePlacedObject.get(5).add(201);
+            pointsToBePlacedObject.get(6).add(511);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(550);
+            pointsToBePlacedObject.get(7).add(199);
+            pointsToBePlacedObject.get(8).add(600);
+            pointsToBePlacedObject.get(8).add(197);
+            pointsToBePlacedObject.get(9).add(653);
+            pointsToBePlacedObject.get(9).add(194);
+            pointsToBePlacedObject.get(10).add(690);
+            pointsToBePlacedObject.get(10).add(191);
+            pointsToBePlacedObject.get(11).add(740);
+            pointsToBePlacedObject.get(11).add(194);
+            pointsToBePlacedObject.get(12).add(786);
+            pointsToBePlacedObject.get(12).add(195);
+            pointsToBePlacedObject.get(13).add(831);
+            pointsToBePlacedObject.get(13).add(199);
+            pointsToBePlacedObject.get(14).add(889);
+            pointsToBePlacedObject.get(14).add(202);
+            pointsToBePlacedObject.get(15).add(928);
+            pointsToBePlacedObject.get(15).add(199);
+            pointsToBePlacedObject.get(16).add(929);
+            pointsToBePlacedObject.get(16).add(217);
+            pointsToBePlacedObject.get(17).add(928);
+            pointsToBePlacedObject.get(17).add(229);
+            pointsToBePlacedObject.get(18).add(908);
+            pointsToBePlacedObject.get(18).add(229);
+            for (int i = 0; i < 19; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 17) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else if (i == 1 || i == 3 || i == 15) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 6 && shortestPath.get(1) == 3) {
+
+            // forward - right - forward - left - forward - .. forward - left - forward - left - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(19);
+            for (int i = 0; i < 19; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(413);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(390);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(391);
+            pointsToBePlacedObject.get(2).add(218);
+            pointsToBePlacedObject.get(3).add(391);
+            pointsToBePlacedObject.get(3).add(199);
+            pointsToBePlacedObject.get(4).add(426);
+            pointsToBePlacedObject.get(4).add(200);
+            pointsToBePlacedObject.get(5).add(463);
+            pointsToBePlacedObject.get(5).add(201);
+            pointsToBePlacedObject.get(6).add(511);
+            pointsToBePlacedObject.get(6).add(199);
+            pointsToBePlacedObject.get(7).add(550);
+            pointsToBePlacedObject.get(7).add(199);
+            pointsToBePlacedObject.get(8).add(600);
+            pointsToBePlacedObject.get(8).add(197);
+            pointsToBePlacedObject.get(9).add(653);
+            pointsToBePlacedObject.get(9).add(194);
+            pointsToBePlacedObject.get(10).add(690);
+            pointsToBePlacedObject.get(10).add(191);
+            pointsToBePlacedObject.get(11).add(740);
+            pointsToBePlacedObject.get(11).add(194);
+            pointsToBePlacedObject.get(12).add(786);
+            pointsToBePlacedObject.get(12).add(195);
+            pointsToBePlacedObject.get(13).add(831);
+            pointsToBePlacedObject.get(13).add(199);
+            pointsToBePlacedObject.get(14).add(889);
+            pointsToBePlacedObject.get(14).add(202);
+            pointsToBePlacedObject.get(15).add(928);
+            pointsToBePlacedObject.get(15).add(199);
+            pointsToBePlacedObject.get(16).add(929);
+            pointsToBePlacedObject.get(16).add(217);
+            pointsToBePlacedObject.get(17).add(928);
+            pointsToBePlacedObject.get(17).add(229);
+            pointsToBePlacedObject.get(18).add(908);
+            pointsToBePlacedObject.get(18).add(229);
+            for (int i = 18; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 17) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else if (i == 1 || i == 3 || i == 15) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else if (shortestPath.get(0) == 4 && shortestPath.get(1) == 5) {
+
+            // forward - right
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(2);
+            for (int i = 0; i < 2; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(909);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(928);
+            pointsToBePlacedObject.get(1).add(229);
+            for (int i = 0; i < 2; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 0) {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                else {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+
+            }
+
+        }
+        else if (shortestPath.get(0) == 5 && shortestPath.get(1) == 4) {
+
+            // left - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(2);
+            for (int i = 0; i < 2; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(909);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(928);
+            pointsToBePlacedObject.get(1).add(229);
+            for (int i = 1; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 0) {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                else {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+
+            }
+
+        }
+        else if (shortestPath.get(0) == 4 && shortestPath.get(1) == 6) {
+
+            // forward - forward - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(3);
+            for (int i = 0; i < 3; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(909);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(928);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(955);
+            pointsToBePlacedObject.get(2).add(229);
+            for (int i = 0; i < 3; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                arrow.setLocalRotation(rotation); //forward
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+
+        }
+        else if (shortestPath.get(0) == 6 && shortestPath.get(1) == 4) {
+
+            // forward - forward - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(3);
+            for (int i = 0; i < 3; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(909);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(928);
+            pointsToBePlacedObject.get(1).add(229);
+            pointsToBePlacedObject.get(2).add(955);
+            pointsToBePlacedObject.get(2).add(229);
+            for (int i = 2; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                arrow.setLocalRotation(rotation); //forward
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+
+        }
+        else if (shortestPath.get(0) == 5 && shortestPath.get(1) == 6) {
+
+            // right - forward
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(2);
+            for (int i = 0; i < 2; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(928);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(955);
+            pointsToBePlacedObject.get(1).add(229);
+            for (int i = 0; i < 2; i++) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 0) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+        else {   // 6-5 path
+
+            // forward - left
+            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(2);
+            for (int i = 0; i < 2; i++) {
+                pointsToBePlacedObject.add(new ArrayList<Integer>());
+            }
+            pointsToBePlacedObject.get(0).add(928);
+            pointsToBePlacedObject.get(0).add(229);
+            pointsToBePlacedObject.get(1).add(955);
+            pointsToBePlacedObject.get(1).add(229);
+            for (int i = 1; i >= 0; i--) {
+                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0),pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
+                if (i == 0) {
+                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
+                }
+                else {
+                    arrow.setLocalRotation(rotation); //forward
+                }
+                arrow.setParent(mAnchorNode);
+                arrow.setRenderable(mObjRenderable);
+            }
+
+        }
+
     }
 
     /**

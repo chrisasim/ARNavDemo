@@ -43,7 +43,7 @@ public class UserLocation extends AppCompatActivity {
     private ListenerRegistration notebookListener;
     List<Double> distance437List, distance574List, distance570List= new ArrayList<>();
     double distance437=0, distance570=0, distance574 = 0;
-    double[] distanceVector ={0,0,0}, calculatedPosition;
+    public double[] distanceVector ={0,0,0}, calculatedPosition;
     double[][] positions = new double[][]{{390, 182},{664,218},{929,181}};
     public BeaconService beaconService;
     private boolean mUserRequestedInstall = true;
