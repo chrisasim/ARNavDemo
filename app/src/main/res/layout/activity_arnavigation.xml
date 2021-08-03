@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.arnavdemo.ARNavigation">
+    tools:context="com.example.indoornavigation.ARNavigation">
 
     <Button
         android:id="@+id/resolve"
@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/fragment"
-        android:name="com.example.arnavdemo.CloudAnchorFragment"
+        android:name="com.example.indoornavigation.CloudAnchorFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

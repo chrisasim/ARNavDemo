@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.arnavdemo">
+    package="com.example.indoornavigation">
 
     <uses-permission android:name="android.permission.CAMERA" /> <!-- Sceneform requires OpenGL ES 3.0 or later. -->
     <uses-feature
@@ -19,6 +19,8 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -28,12 +30,12 @@
         android:supportsRtl="true"
         android:hardwareAccelerated="true"
         android:theme="@style/Theme.ARNavDemo">
-        <activity android:name=".ARNavigation" />
-        <activity android:name=".UserLocation" />
-        <activity android:name=".DestinationActivity" />
-        <activity android:name=".CurrentLocationActivity" />
-        <activity android:name=".ExplanationApp" />
-        <activity android:name=".WelcomeActivity">
+        <activity android:name="com.example.indoornavigation.ARNavigation" />
+        <activity android:name="com.example.indoornavigation.UserLocation" />
+        <activity android:name="com.example.indoornavigation.DestinationActivity" />
+        <activity android:name="com.example.indoornavigation.CurrentLocationActivity" />
+        <activity android:name="com.example.indoornavigation.ExplanationApp" />
+        <activity android:name="com.example.indoornavigation.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

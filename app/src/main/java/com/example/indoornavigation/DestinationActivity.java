@@ -1,4 +1,4 @@
-package com.example.arnavdemo;
+package com.example.indoornavigation;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.arnavdemo.mapping.DestinationFromId;
+import com.example.indoornavigation.mapping.DestinationFromId;
 
 import java.util.ArrayList;
 

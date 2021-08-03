@@ -1,4 +1,4 @@
-package com.example.arnavdemo;
+package com.example.indoornavigation;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -8,7 +8,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -19,8 +18,8 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
-import com.example.arnavdemo.mapping.Location;
-import com.example.arnavdemo.mapping.LocationFactory;
+import com.example.indoornavigation.mapping.Location;
+import com.example.indoornavigation.mapping.LocationFactory;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
@@ -31,38 +30,63 @@ import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.firebase.database.annotations.Nullable;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
+import com.lemmingapex.trilateration.TrilaterationFunction;
 
-import java.lang.reflect.Array;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
+import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
+import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
+
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class ARNavigation extends AppCompatActivity implements SensorEventListener {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = ARNavigation.class.getSimpleName();
     private static final double MIN_OPENGL_VERSION = 3.0;
     private static final double CHECK_FOR_ARRIVAL = 4.0;
     private static final double WRONG_DIRECTION = 4.0;
 
     private ArrayList<Integer> shortestPath = new ArrayList<>();
-    private UserLocation userLocation = new UserLocation();
     private ArrayList<Integer> coordsOfDestinationId;
     private ArrayList<Integer> coordsOfDestination;
 
     private CloudAnchorFragment mARFragment;
     private ModelRenderable mObjRenderable;
-    private Anchor mAnchor = null;
     private AnchorNode mAnchorNode = null;
     private Node arrow;
 
-   // private float currentDegree = 0f;
+    // private float currentDegree = 0f;
     private SensorManager sensorManager;
 
     private final float[] accelerometerReading = new float[3];
     private final float[] magnetometerReading = new float[3];
 
-    private float[] rotationMatrix = new float[9];
+    private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
+
+    //beacon Service
+    private FirebaseFirestore fStore;
+    StorageReference storageReference;
+    CollectionReference notebookRef;
+    private ListenerRegistration notebookListener;
+    List<Double> distance437List, distance574List, distance570List= new ArrayList<>();
+    double distance437=0, distance570=0, distance574 = 0;
+    public double[] distanceVector = {0,0,0}, calculatedPosition = {0,0,0};
+//    double[][] positions = new double[][]{{390, 182},{664,218},{929,181}};
+    double[][] positions = new double[][]{{39.61830,20.83864},{39.61840,20.83862},{39.61852,20.83861}};
+   // public BeaconService beaconService;
+    //private boolean mUserRequestedInstall = true;
 
 
     @Override
@@ -77,15 +101,15 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
         String selectDestinationFrom = DestinationActivity.SELECT_DESTINATION_FROM;
         String selectLocationFrom = CurrentLocationActivity.SELECT_LOCATION_FROM;
 
-        if (selectDestinationFrom == "fromId" && selectLocationFrom == "fromQRCode") {
+        if (selectDestinationFrom.equals("fromId") && selectLocationFrom.equals("fromQRCode")) {
             Path path = new Path(coordsOfEntrance.get(0), coordsOfDestinationId.get(0));
             shortestPath = path.createPath();
         }
-        if (selectDestinationFrom == "fromId" && selectLocationFrom == "fromMenu") {
+        if (selectDestinationFrom.equals("fromId") && selectLocationFrom.equals("fromMenu")) {
             Path path = new Path(coordsOfCurrentPos.get(0), coordsOfDestinationId.get(0));
             shortestPath = path.createPath();
         }
-        if (selectDestinationFrom == "fromMenu" && selectLocationFrom == "fromQRCode") {
+        if (selectDestinationFrom.equals("fromMenu") && selectLocationFrom.equals("fromQRCode")) {
             String from = getIntent().getExtras().getString(DestinationActivity.FROM);
             LocationFactory locationFactory = new LocationFactory();
             Location point = locationFactory.getLocation("DESTINATION", from);
@@ -93,7 +117,7 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
             Path path = new Path(coordsOfEntrance.get(0), coordsOfDestination.get(0));
             shortestPath = path.createPath();
         }
-        if (selectDestinationFrom == "fromMenu" && selectLocationFrom == "fromMenu") {
+        if (selectDestinationFrom.equals("fromMenu") && selectLocationFrom.equals("fromMenu")) {
             String from = getIntent().getExtras().getString(DestinationActivity.FROM);
             LocationFactory locationFactory = new LocationFactory();
             Location point = locationFactory.getLocation("DESTINATION", from);
@@ -102,8 +126,13 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
             shortestPath = path.createPath();
         }
 
+        fStore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
+        notebookRef = fStore.collection("beaconInfo");
+
         // access in the device's sensors
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
 
         setContentView(R.layout.activity_arnavigation);
         setARFragment();
@@ -132,7 +161,7 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
                             return null;
                         });
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -154,6 +183,12 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
         super.onStart();
         WorkRequest beaconWorker = new OneTimeWorkRequest.Builder(BeaconService.class).build();
         WorkManager.getInstance(getApplicationContext()).enqueue(beaconWorker);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        notebookListener.remove();
     }
 
 
@@ -241,7 +276,6 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
 
     private void onSceneUpdate(FrameTime frameTime) {
 
-        Log.i(TAG, String.valueOf((orientationAngles[2])));
         // Let the fragment update its state first.
         mARFragment.onUpdate(frameTime);
 
@@ -255,25 +289,124 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
             return;
         }
 
-
         // Place the anchor 1m in front of the camera if anchorNode is null.
         if (this.mAnchorNode == null) {
             addModelToScene();
         }
-        else{
-            directUser();
-
-        }
+//        else{
+//            directUser();
+//        }
     }
+
+    /**
+     * It called firstly to initialize the arrow in the correct position
+     */
+    private void addModelToScene() {
+        Session session = mARFragment.getArSceneView().getSession();
+        Pose pos = Objects.requireNonNull(mARFragment.getArSceneView().getArFrame()).getCamera().getPose().compose(Pose.makeTranslation(0, 0, -1));
+        assert session != null;
+        Anchor mAnchor;
+        mAnchor = session.createAnchor(pos);
+        mAnchorNode = new AnchorNode(mAnchor);
+        mAnchorNode.setParent(mARFragment.getArSceneView().getScene());
+
+        // Create the arrow node and add it to the anchor.
+        arrow = new Node();
+        Quaternion rotation1 = Quaternion.axisAngle(new Vector3(1.3f, 0.5f, 0.0f), 90); // rotate X axis 90 degrees
+        Quaternion rotation2 = Quaternion.axisAngle(new Vector3(0.5f, -1.5f, 1.0f), 90); // rotate Y axis 90 degrees
+        arrow.setLocalRotation(Quaternion.multiply(rotation1, rotation2));
+        arrow.setParent(mAnchorNode);
+        //arrow.setRenderable(mObjRenderable);
+
+        updateLocationUser();
+    }
+
+
+    private void updateLocationUser() {
+//        notebookListener = notebookRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException error) {
+//                Log.i(TAG,"mphkeee");
+//                if (error != null) {
+//                    Toast.makeText(ARNavigation.this, "Error while loading!", Toast.LENGTH_SHORT).show();
+//
+//                } else {
+//                    for (DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+//                        Long MinorType = (Long) documentChange.getDocument().getData().get("Minor");
+//
+//                        if (MinorType == ConstantsVariables.minor_437) {
+//                            distance437List = (List<Double>) documentChange.getDocument().getData().get("Distance(m)");
+//                            distance437 = distance437List.get(distance437List.size() - 1);
+//                            distanceVector[0] = distance437 / 100000; //km to meters
+//
+//                        } else if (MinorType == ConstantsVariables.minor_570) {
+//                            distance570List = (List<Double>) documentChange.getDocument().getData().get("Distance(m)");
+//                            distance570 = distance570List.get(distance570List.size() - 1);
+//                            distanceVector[1] = distance570 / 100000;
+//                        } else if (MinorType == ConstantsVariables.minor_574) {
+//                            distance574List = (List<Double>) documentChange.getDocument().getData().get("Distance(m)");
+//                            distance574 = distance574List.get(distance574List.size() - 1);
+//                            distanceVector[2] = distance574 / 100000;
+//                        }
+//                    }
+//                }
+//                Log.i(TAG, String.valueOf(distanceVector.length));
+//                Log.i(TAG, "Distances: " + distance437 + distance570 + distance574);
+//
+//                //Trilateration
+//                NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distanceVector), new LevenbergMarquardtOptimizer());
+//                LeastSquaresOptimizer.Optimum optimum = solver.solve();
+//                calculatedPosition = optimum.getPoint().toArray();
+//
+//                Log.d(TAG, String.valueOf(calculatedPosition[0]));
+//                Log.d(TAG, String.valueOf(calculatedPosition[1]));
+//                directUser();
+//            }
+//        });
+//        double lat = Array.getDouble(calculatedPosition, 0);
+//        double lon = Array.getDouble(calculatedPosition, 1);
+//        LatLng position;
+//        position = new LatLng(lat, lon);
+
+        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+        List<BeaconInfo> beaconList = db.getAllBeacons();
+
+        for (BeaconInfo beaconInfo : beaconList) {
+            int MinorType = beaconInfo.getMinor();
+
+            if (MinorType == ConstantsVariables.minor_437) {
+                distance437 =  beaconInfo.getDistance();
+                distanceVector[0] = distance437 / 100000; //km to meters
+
+            } else if (MinorType == ConstantsVariables.minor_570) {
+                distance570 = beaconInfo.getDistance();
+                distanceVector[1] = distance570 / 100000;
+
+            } else if (MinorType == ConstantsVariables.minor_574) {
+                distance574 = beaconInfo.getDistance();
+                distanceVector[2] = distance574 / 100000;
+            }
+        }
+        Log.i(TAG, String.valueOf(distanceVector.length));
+        Log.i(TAG, "Distances: " + distance437 + distance570 + distance574);
+
+        //Trilateration
+        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distanceVector), new LevenbergMarquardtOptimizer());
+        LeastSquaresOptimizer.Optimum optimum = solver.solve();
+        calculatedPosition = optimum.getPoint().toArray();
+
+        directUser();
+    }
+
 
     private void directUser() {
 //
-//        Vector3 cameraPos = mARFragment.getArSceneView().getScene().getCamera().getWorldPosition();
-//        Vector3 cameraForward = mARFragment.getArSceneView().getScene().getCamera().getForward();
-//        Vector3 position = Vector3.add(cameraPos, cameraForward.scaled((float)Math.round(orientationAngles[2] * 10f) / 10f));
+        Vector3 cameraPos = mARFragment.getArSceneView().getScene().getCamera().getWorldPosition();
+        Vector3 cameraForward = mARFragment.getArSceneView().getScene().getCamera().getForward();
+        Vector3 position = Vector3.add(cameraPos, cameraForward.scaled((float)Math.round(orientationAngles[2] * 10f) / 10f));
         Quaternion rotation = arrow.getLocalRotation();
 //        Vector3 scale =  arrow.getWorldScale();
-//        arrow.setLocalPosition(position);
+        arrow.setLocalPosition(position);
 //        arrow.setLocalRotation(rotation);
 //        arrow.setLocalScale(scale);
 //        arrow.setParent(mAnchorNode);
@@ -289,48 +422,57 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
         if (shortestPath.get(0) == 1 && shortestPath.get(1) == 2) {
 
             // forward - right
-            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(2);  // ΕΔΩ ΑΠΟΘΗΚΕΥΩ ΤΙΣ ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΠΟΥ ΘΑ ΤΟΠΟΘΕΤΕΙΤΑΙ ΤΟ OBJECT. ΤΙΣ ΠΗΡΑ ΚΑΝΟΝΤΑΣ MAPPING ΣΤΗΝ ΕΙΚΟΝΑ.
-            for (int i = 0; i < 2; i++) {
-                pointsToBePlacedObject.add(new ArrayList<Integer>());
-            }
-            pointsToBePlacedObject.get(0).add(0);
-            pointsToBePlacedObject.get(0).add(0);
-            pointsToBePlacedObject.get(1).add(1);
-            pointsToBePlacedObject.get(1).add(1);
+//            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(2);  // ΕΔΩ ΑΠΟΘΗΚΕΥΩ ΤΙΣ ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΠΟΥ ΘΑ ΤΟΠΟΘΕΤΕΙΤΑΙ ΤΟ OBJECT. ΤΙΣ ΠΗΡΑ ΚΑΝΟΝΤΑΣ MAPPING ΣΤΗΝ ΕΙΚΟΝΑ.
+//            for (int i = 0; i < 2; i++) {
+//                pointsToBePlacedObject.add(new ArrayList<Integer>());
+//            }
+//            pointsToBePlacedObject.get(0).add(0);
+//            pointsToBePlacedObject.get(0).add(0);
+//            pointsToBePlacedObject.get(1).add(1);
+//            pointsToBePlacedObject.get(1).add(1);
 
             // ΔΥΟ ΕΜΦΑΝΙΣΕΙΣ ΤΟΥ ΒΕΛΟΣ(ΕΥΘΕΙΑ, ΔΕΞΙΑ)
-            for (int i = 0; i < 2; i++) {
-                double[] previousUserLocation = userLocation.calculatedPosition;
-                arrow.setLocalPosition(new Vector3(pointsToBePlacedObject.get(i).get(0), pointsToBePlacedObject.get(i).get(1), (float)Math.round(orientationAngles[2] * 10f) / 10f));
-                if (i == 0) {
-                    arrow.setLocalRotation(rotation); //forward
-                }
-                else {
-                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
-                }
-                arrow.setParent(mAnchorNode);
-                arrow.setRenderable(mObjRenderable);
+//            for (int i = 0; i < 2; i++) {
+//
+//                if (i == 0) {
+//                    arrow.setLocalRotation(rotation); //forward
+//                }
+//                else {
+//                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+//                }
+//
+//                arrow.setRenderable(mObjRenderable);
 
-                double[] currentPosition = userLocation.calculatedPosition;
-                while (previousUserLocation == currentPosition) { // αυτο γίνεται ώστε η επόμενη εμφανιση του object να γίνει αφού κινειθεί ο χρήστης, καθώς διαφορετικά ισώς να εμαφανίζονται διαδοχικά(γρηγορα) τα βέλοι, κάτι το οποίο δεν θέλουμε
-                    // wait
-                    currentPosition = userLocation.calculatedPosition;
-                }
-                if (Math.abs(currentPosition[0] - pointsToBePlacedObject.get(i).get(0)) > WRONG_DIRECTION && Math.abs(currentPosition[1] - pointsToBePlacedObject.get(i).get(1)) > WRONG_DIRECTION) {
-                    // ΕΜΦΑΝΙΣΕ ΚΑΤΙ ΠΟΥ ΝΑ ΤΟΥ ΕΞΗΓΕΙ ΟΤΙ ΚΙΝΕΙΤΑΙ ΛΑΘΟΣ
-                }
-            }
-            double[] currentPosition = userLocation.calculatedPosition;
-            if (DestinationActivity.SELECT_DESTINATION_FROM == "fromMenu") { // ΣΗΜΕΙΩΣΗ : ΟΙ ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΠΟΥ ΑΠΟΘΗΚΕΥΟΥΝ ΤΑ coordsOfDestination/coordsOfDestinationId ΘΑ ΑΛΛΑΞΟΥΝ ΩΣΤΕ ΝΑ ΑΠΟΘΗΚΕΥΟΥΝ ΜΟΝΟ ΕΝΑ ΣΗΜΕΙΟ, ΑΥΤΟ ΕΞΩ ΑΚΡΙΒΩΣ ΑΠΟ ΤΗΝ ΠΟΡΤΑ ΤΟΥ ΠΡΟΟΡΙΣΜΟΥ ΚΑΙ ΟΧΙ ΠΟΛΥΓΩΝΟ ΟΠΩΣ ΑΠΟΘΗΚΕΥΟΥΝ ΤΩΡΑ. ΣΥΜΦΩΝΕΙΣ?
-                if (Math.abs(coordsOfDestination.get(1) - currentPosition[0]) < CHECK_FOR_ARRIVAL && Math.abs(coordsOfDestination.get(2) - currentPosition[1]) < CHECK_FOR_ARRIVAL) {
-                    // ARObject pin point
-                }
-            }
-            else {
-                if (Math.abs(coordsOfDestinationId.get(1) - currentPosition[0]) < CHECK_FOR_ARRIVAL && Math.abs(coordsOfDestinationId.get(2) - currentPosition[1]) < CHECK_FOR_ARRIVAL) {
-                    // ARObject pin point
-                }
-            }
+//                double[] currentPosition = userLocation.calculatedPosition;
+//                while (previousUserLocation == currentPosition) { // αυτο γίνεται ώστε η επόμενη εμφανιση του object να γίνει αφού κινειθεί ο χρήστης, καθώς διαφορετικά ισώς να εμαφανίζονται διαδοχικά(γρηγορα) τα βέλοι, κάτι το οποίο δεν θέλουμε
+//                    // wait
+//                    currentPosition = userLocation.calculatedPosition;
+//                }
+//                if (Math.abs(currentPosition[0] - pointsToBePlacedObject.get(i).get(0)) > WRONG_DIRECTION && Math.abs(currentPosition[1] - pointsToBePlacedObject.get(i).get(1)) > WRONG_DIRECTION) {
+//                    // ΕΜΦΑΝΙΣΕ ΚΑΤΙ ΠΟΥ ΝΑ ΤΟΥ ΕΞΗΓΕΙ ΟΤΙ ΚΙΝΕΙΤΑΙ ΛΑΘΟΣ
+//                }
+ //           }
+
+//            while(calculatedPosition[0] < 500) {
+//                arrow.setLocalRotation(rotation); //forward
+//                arrow.setRenderable(mObjRenderable);
+//
+//            }
+
+
+
+
+
+//            if (DestinationActivity.SELECT_DESTINATION_FROM.equals("fromMenu")) { // ΣΗΜΕΙΩΣΗ : ΟΙ ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΠΟΥ ΑΠΟΘΗΚΕΥΟΥΝ ΤΑ coordsOfDestination/coordsOfDestinationId ΘΑ ΑΛΛΑΞΟΥΝ ΩΣΤΕ ΝΑ ΑΠΟΘΗΚΕΥΟΥΝ ΜΟΝΟ ΕΝΑ ΣΗΜΕΙΟ, ΑΥΤΟ ΕΞΩ ΑΚΡΙΒΩΣ ΑΠΟ ΤΗΝ ΠΟΡΤΑ ΤΟΥ ΠΡΟΟΡΙΣΜΟΥ ΚΑΙ ΟΧΙ ΠΟΛΥΓΩΝΟ ΟΠΩΣ ΑΠΟΘΗΚΕΥΟΥΝ ΤΩΡΑ. ΣΥΜΦΩΝΕΙΣ?
+//                if (Math.abs(coordsOfDestination.get(1) - currentPosition[0]) < CHECK_FOR_ARRIVAL && Math.abs(coordsOfDestination.get(2) - currentPosition[1]) < CHECK_FOR_ARRIVAL) {
+//                    // ARObject pin point
+//                }
+//            }
+//            else {
+//                if (Math.abs(coordsOfDestinationId.get(1) - currentPosition[0]) < CHECK_FOR_ARRIVAL && Math.abs(coordsOfDestinationId.get(2) - currentPosition[1]) < CHECK_FOR_ARRIVAL) {
+//                    // ARObject pin point
+//                }
+//            }
         }
         else if (shortestPath.get(0) == 2 && shortestPath.get(1) == 1) {
 
@@ -1651,34 +1793,10 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
 
     }
 
-    /**
-     * It called firstly to initialize the arrow in the correct position
-     */
-    private void addModelToScene() {
-        Session session = mARFragment.getArSceneView().getSession();
-        Pose pos = mARFragment.getArSceneView().getArFrame().getCamera().getPose().compose(Pose.makeTranslation(0, 0, -1));
-        mAnchor = session.createAnchor(pos);
-        mAnchorNode = new AnchorNode(mAnchor);
-        mAnchorNode.setParent(mARFragment.getArSceneView().getScene());
-
-        // Create the arrow node and add it to the anchor.
-        arrow = new Node();
-        Quaternion rotation1 = Quaternion.axisAngle(new Vector3(1.3f, 0.5f, 0.0f), 90); // rotate X axis 90 degrees
-        Quaternion rotation2 = Quaternion.axisAngle(new Vector3(0.5f, -1.5f, 1.0f), 90); // rotate Y axis 90 degrees
-        arrow.setLocalRotation(Quaternion.multiply(rotation1, rotation2));
-        arrow.setParent(mAnchorNode);
-        arrow.setRenderable(mObjRenderable);
-    }
 
 
     public static boolean checkIsSupportedDeviceOrFinish(final Activity activity) {
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Log.e(TAG, "Sceneform requires Android N or later");
-            Toast.makeText(activity, "Sceneform requires Android N or later", Toast.LENGTH_LONG).show();
-            activity.finish();
-            return false;
-        }
         String openGlVersionString =
                 ((ActivityManager)activity.getSystemService(Context.ACTIVITY_SERVICE))
                         .getDeviceConfigurationInfo()

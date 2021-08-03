@@ -1,4 +1,4 @@
-package com.example.arnavdemo.mapping;
+package com.example.indoornavigation.mapping;
 
 import java.util.ArrayList;
 

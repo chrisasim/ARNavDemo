@@ -1,4 +1,4 @@
-package com.example.arnavdemo;
+package com.example.indoornavigation;
 
 import android.Manifest;
 import android.content.Intent;

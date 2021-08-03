@@ -1,4 +1,4 @@
-package com.example.arnavdemo;
+package com.example.indoornavigation;
 
 import com.google.ar.core.Config;
 import com.google.ar.core.Session;

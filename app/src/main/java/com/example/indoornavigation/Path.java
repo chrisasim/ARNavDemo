@@ -1,4 +1,4 @@
-package com.example.arnavdemo;
+package com.example.indoornavigation;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
