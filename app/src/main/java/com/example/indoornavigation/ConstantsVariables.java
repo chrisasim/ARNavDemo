@@ -9,7 +9,7 @@ public class ConstantsVariables {
     public static float sensor = 0;
 
     //Database related items
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "beacon_db";
     public static final String TABLE_NAME = "beacons";
 

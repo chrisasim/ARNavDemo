@@ -47,6 +47,7 @@ public class BeaconService extends Worker {
 
 
     DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+
     protected ScanCallback mScanCallback = new ScanCallback() {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
@@ -64,7 +65,17 @@ public class BeaconService extends Worker {
                         final IBeacon iBeacon = (IBeacon) structure;
                         Distance = (float) calculateDistance(result.getRssi());
                         DistanceSecondMethod = (float) calculateDistanceSecondMethod(result.getRssi());
-                        db.addBeacon(new BeaconInfo(iBeacon.getMinor(), Distance, result.getRssi()));
+                        if (db.getCount() == 0 || !db.checkIfSpecificMinorIsInDB(iBeacon.getMinor())) {
+                            db.addBeacon(new BeaconInfo(iBeacon.getMinor(), Distance, result.getRssi()));
+                        }
+                        else {
+                            BeaconInfo beaconInfo = db.getBeaconInfo(iBeacon.getMinor());
+                            beaconInfo.setMinor(iBeacon.getMinor());
+                            beaconInfo.setDistance(Distance);
+                            beaconInfo.setRssi(result.getRssi());
+                            db.updateBeacon(beaconInfo);
+                        }
+
 //                        final DocumentReference docref = FirebaseFirestore.getInstance().collection("beaconInfo").document(bluetoothDevice.getAddress());
 //                        docref.get().addOnCompleteListener(task -> {
 //                            Log.i(TAG, String.valueOf(task.getException()));

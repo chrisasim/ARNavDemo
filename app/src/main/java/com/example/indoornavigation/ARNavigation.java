@@ -54,7 +54,8 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
 
     private static final String TAG = ARNavigation.class.getSimpleName();
     private static final double MIN_OPENGL_VERSION = 3.0;
-    private static final double CHECK_FOR_ARRIVAL = 4.0;
+    private static final double CHECK_FOR_ARRIVAL_IN_X = 4.0;
+    private static final double CHECK_FOR_ARRIVAL_IN_Y = 42;
     private static final double WRONG_DIRECTION = 4.0;
 
     private ArrayList<Integer> shortestPath = new ArrayList<>();
@@ -76,16 +77,16 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
     private final float[] orientationAngles = new float[3];
 
     //beacon Service
-    private FirebaseFirestore fStore;
-    StorageReference storageReference;
-    CollectionReference notebookRef;
-    private ListenerRegistration notebookListener;
-    List<Double> distance437List, distance574List, distance570List= new ArrayList<>();
+//    private FirebaseFirestore fStore;
+//    StorageReference storageReference;
+//    CollectionReference notebookRef;
+//    private ListenerRegistration notebookListener;
+//    List<Double> distance437List, distance574List, distance570List= new ArrayList<>();
     double distance437=0, distance570=0, distance574 = 0;
     public double[] distanceVector = {0,0,0}, calculatedPosition = {0,0,0};
-//    double[][] positions = new double[][]{{390, 182},{664,218},{929,181}};
-    double[][] positions = new double[][]{{39.61830,20.83864},{39.61840,20.83862},{39.61852,20.83861}};
-   // public BeaconService beaconService;
+    //    double[][] positions = new double[][]{{390, 182},{664,218},{929,181}};
+    double[][] positions = new double[][]{{1344, 952},{2704, 1128},{4016, 960}};
+    // public BeaconService beaconService;
     //private boolean mUserRequestedInstall = true;
 
 
@@ -126,9 +127,9 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
             shortestPath = path.createPath();
         }
 
-        fStore = FirebaseFirestore.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference();
-        notebookRef = fStore.collection("beaconInfo");
+//        fStore = FirebaseFirestore.getInstance();
+//        storageReference = FirebaseStorage.getInstance().getReference();
+//        notebookRef = fStore.collection("beaconInfo");
 
         // access in the device's sensors
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -188,7 +189,7 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onStop() {
         super.onStop();
-        notebookListener.remove();
+ //       notebookListener.remove();
     }
 
 
@@ -289,13 +290,24 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
             return;
         }
 
+        if (DestinationActivity.SELECT_DESTINATION_FROM.equals("fromMenu")) {
+            if (Math.abs(coordsOfDestination.get(1) - calculatedPosition[0]) < CHECK_FOR_ARRIVAL_IN_X && Math.abs(coordsOfDestination.get(2) - calculatedPosition[1]) < CHECK_FOR_ARRIVAL_IN_Y) {
+                // ARObject pin point and terminate app
+            }
+        }
+        else {
+            if (Math.abs(coordsOfDestinationId.get(1) - calculatedPosition[0]) < CHECK_FOR_ARRIVAL_IN_X && Math.abs(coordsOfDestinationId.get(2) - calculatedPosition[1]) < CHECK_FOR_ARRIVAL_IN_Y) {
+                // ARObject pin point and terminate app
+            }
+        }
+
         // Place the anchor 1m in front of the camera if anchorNode is null.
         if (this.mAnchorNode == null) {
             addModelToScene();
         }
-//        else{
-//            directUser();
-//        }
+        else{
+            directUser();
+        }
     }
 
     /**
@@ -317,162 +329,31 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
         arrow.setLocalRotation(Quaternion.multiply(rotation1, rotation2));
         arrow.setParent(mAnchorNode);
         //arrow.setRenderable(mObjRenderable);
-
-        updateLocationUser();
-    }
-
-
-    private void updateLocationUser() {
-//        notebookListener = notebookRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException error) {
-//                Log.i(TAG,"mphkeee");
-//                if (error != null) {
-//                    Toast.makeText(ARNavigation.this, "Error while loading!", Toast.LENGTH_SHORT).show();
-//
-//                } else {
-//                    for (DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
-//                        Long MinorType = (Long) documentChange.getDocument().getData().get("Minor");
-//
-//                        if (MinorType == ConstantsVariables.minor_437) {
-//                            distance437List = (List<Double>) documentChange.getDocument().getData().get("Distance(m)");
-//                            distance437 = distance437List.get(distance437List.size() - 1);
-//                            distanceVector[0] = distance437 / 100000; //km to meters
-//
-//                        } else if (MinorType == ConstantsVariables.minor_570) {
-//                            distance570List = (List<Double>) documentChange.getDocument().getData().get("Distance(m)");
-//                            distance570 = distance570List.get(distance570List.size() - 1);
-//                            distanceVector[1] = distance570 / 100000;
-//                        } else if (MinorType == ConstantsVariables.minor_574) {
-//                            distance574List = (List<Double>) documentChange.getDocument().getData().get("Distance(m)");
-//                            distance574 = distance574List.get(distance574List.size() - 1);
-//                            distanceVector[2] = distance574 / 100000;
-//                        }
-//                    }
-//                }
-//                Log.i(TAG, String.valueOf(distanceVector.length));
-//                Log.i(TAG, "Distances: " + distance437 + distance570 + distance574);
-//
-//                //Trilateration
-//                NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distanceVector), new LevenbergMarquardtOptimizer());
-//                LeastSquaresOptimizer.Optimum optimum = solver.solve();
-//                calculatedPosition = optimum.getPoint().toArray();
-//
-//                Log.d(TAG, String.valueOf(calculatedPosition[0]));
-//                Log.d(TAG, String.valueOf(calculatedPosition[1]));
-//                directUser();
-//            }
-//        });
-//        double lat = Array.getDouble(calculatedPosition, 0);
-//        double lon = Array.getDouble(calculatedPosition, 1);
-//        LatLng position;
-//        position = new LatLng(lat, lon);
-
-        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-        List<BeaconInfo> beaconList = db.getAllBeacons();
-
-        for (BeaconInfo beaconInfo : beaconList) {
-            int MinorType = beaconInfo.getMinor();
-
-            if (MinorType == ConstantsVariables.minor_437) {
-                distance437 =  beaconInfo.getDistance();
-                distanceVector[0] = distance437 / 100000; //km to meters
-
-            } else if (MinorType == ConstantsVariables.minor_570) {
-                distance570 = beaconInfo.getDistance();
-                distanceVector[1] = distance570 / 100000;
-
-            } else if (MinorType == ConstantsVariables.minor_574) {
-                distance574 = beaconInfo.getDistance();
-                distanceVector[2] = distance574 / 100000;
-            }
-        }
-        Log.i(TAG, String.valueOf(distanceVector.length));
-        Log.i(TAG, "Distances: " + distance437 + distance570 + distance574);
-
-        //Trilateration
-        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distanceVector), new LevenbergMarquardtOptimizer());
-        LeastSquaresOptimizer.Optimum optimum = solver.solve();
-        calculatedPosition = optimum.getPoint().toArray();
-
-        directUser();
     }
 
 
     private void directUser() {
-//
+
         Vector3 cameraPos = mARFragment.getArSceneView().getScene().getCamera().getWorldPosition();
         Vector3 cameraForward = mARFragment.getArSceneView().getScene().getCamera().getForward();
         Vector3 position = Vector3.add(cameraPos, cameraForward.scaled((float)Math.round(orientationAngles[2] * 10f) / 10f));
         Quaternion rotation = arrow.getLocalRotation();
-//        Vector3 scale =  arrow.getWorldScale();
         arrow.setLocalPosition(position);
-//        arrow.setLocalRotation(rotation);
-//        arrow.setLocalScale(scale);
-//        arrow.setParent(mAnchorNode);
-//        arrow.setRenderable(mObjRenderable);
-
-
-//            arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(1.0f, 0.0f, 0.0f), 45.0f)); // back
-//            arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
-//            arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, -2.3f, 0.0f), 45.0f)); //left
-
+        updateLocationUser();
 
         // ΜΠΛΕΚΑΣ ------ ΒΛΑΧΟΣ
         if (shortestPath.get(0) == 1 && shortestPath.get(1) == 2) {
 
-            // forward - right
-//            ArrayList<ArrayList<Integer>> pointsToBePlacedObject = new ArrayList<>(2);  // ΕΔΩ ΑΠΟΘΗΚΕΥΩ ΤΙΣ ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΠΟΥ ΘΑ ΤΟΠΟΘΕΤΕΙΤΑΙ ΤΟ OBJECT. ΤΙΣ ΠΗΡΑ ΚΑΝΟΝΤΑΣ MAPPING ΣΤΗΝ ΕΙΚΟΝΑ.
-//            for (int i = 0; i < 2; i++) {
-//                pointsToBePlacedObject.add(new ArrayList<Integer>());
-//            }
-//            pointsToBePlacedObject.get(0).add(0);
-//            pointsToBePlacedObject.get(0).add(0);
-//            pointsToBePlacedObject.get(1).add(1);
-//            pointsToBePlacedObject.get(1).add(1);
-
-            // ΔΥΟ ΕΜΦΑΝΙΣΕΙΣ ΤΟΥ ΒΕΛΟΣ(ΕΥΘΕΙΑ, ΔΕΞΙΑ)
-//            for (int i = 0; i < 2; i++) {
-//
-//                if (i == 0) {
-//                    arrow.setLocalRotation(rotation); //forward
-//                }
-//                else {
-//                    arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
-//                }
-//
-//                arrow.setRenderable(mObjRenderable);
-
-//                double[] currentPosition = userLocation.calculatedPosition;
-//                while (previousUserLocation == currentPosition) { // αυτο γίνεται ώστε η επόμενη εμφανιση του object να γίνει αφού κινειθεί ο χρήστης, καθώς διαφορετικά ισώς να εμαφανίζονται διαδοχικά(γρηγορα) τα βέλοι, κάτι το οποίο δεν θέλουμε
-//                    // wait
-//                    currentPosition = userLocation.calculatedPosition;
-//                }
-//                if (Math.abs(currentPosition[0] - pointsToBePlacedObject.get(i).get(0)) > WRONG_DIRECTION && Math.abs(currentPosition[1] - pointsToBePlacedObject.get(i).get(1)) > WRONG_DIRECTION) {
-//                    // ΕΜΦΑΝΙΣΕ ΚΑΤΙ ΠΟΥ ΝΑ ΤΟΥ ΕΞΗΓΕΙ ΟΤΙ ΚΙΝΕΙΤΑΙ ΛΑΘΟΣ
-//                }
- //           }
-
-//            while(calculatedPosition[0] < 500) {
-//                arrow.setLocalRotation(rotation); //forward
-//                arrow.setRenderable(mObjRenderable);
-//
-//            }
+            if (calculatedPosition[0] >= 1139 && calculatedPosition[0] <= 1239 && calculatedPosition[1] >= 1166 && calculatedPosition[1] <= 1249) {
+                arrow.setLocalRotation(rotation); //forward
+                arrow.setRenderable(mObjRenderable);
+            }
+            else if (calculatedPosition[0] >= 1281 && calculatedPosition[0] <= 1381 && calculatedPosition[1] >= 1166 && calculatedPosition[1] <= 1249) {
+                arrow.setWorldRotation(Quaternion.axisAngle(new Vector3(0.0f, 2.0f, 0.0f), 45.0f)); // right
+                arrow.setRenderable(mObjRenderable);
+            }
 
 
-
-
-
-//            if (DestinationActivity.SELECT_DESTINATION_FROM.equals("fromMenu")) { // ΣΗΜΕΙΩΣΗ : ΟΙ ΣΥΝΤΕΤΑΓΜΕΝΕΣ ΠΟΥ ΑΠΟΘΗΚΕΥΟΥΝ ΤΑ coordsOfDestination/coordsOfDestinationId ΘΑ ΑΛΛΑΞΟΥΝ ΩΣΤΕ ΝΑ ΑΠΟΘΗΚΕΥΟΥΝ ΜΟΝΟ ΕΝΑ ΣΗΜΕΙΟ, ΑΥΤΟ ΕΞΩ ΑΚΡΙΒΩΣ ΑΠΟ ΤΗΝ ΠΟΡΤΑ ΤΟΥ ΠΡΟΟΡΙΣΜΟΥ ΚΑΙ ΟΧΙ ΠΟΛΥΓΩΝΟ ΟΠΩΣ ΑΠΟΘΗΚΕΥΟΥΝ ΤΩΡΑ. ΣΥΜΦΩΝΕΙΣ?
-//                if (Math.abs(coordsOfDestination.get(1) - currentPosition[0]) < CHECK_FOR_ARRIVAL && Math.abs(coordsOfDestination.get(2) - currentPosition[1]) < CHECK_FOR_ARRIVAL) {
-//                    // ARObject pin point
-//                }
-//            }
-//            else {
-//                if (Math.abs(coordsOfDestinationId.get(1) - currentPosition[0]) < CHECK_FOR_ARRIVAL && Math.abs(coordsOfDestinationId.get(2) - currentPosition[1]) < CHECK_FOR_ARRIVAL) {
-//                    // ARObject pin point
-//                }
-//            }
         }
         else if (shortestPath.get(0) == 2 && shortestPath.get(1) == 1) {
 
@@ -1793,6 +1674,81 @@ public class ARNavigation extends AppCompatActivity implements SensorEventListen
 
     }
 
+
+    private void updateLocationUser() {
+//        notebookListener = notebookRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot documentSnapshots, @Nullable FirebaseFirestoreException error) {
+//                Log.i(TAG,"mphkeee");
+//                if (error != null) {
+//                    Toast.makeText(ARNavigation.this, "Error while loading!", Toast.LENGTH_SHORT).show();
+//
+//                } else {
+//                    for (DocumentChange documentChange : documentSnapshots.getDocumentChanges()) {
+//                        Long MinorType = (Long) documentChange.getDocument().getData().get("Minor");
+//
+//                        if (MinorType == ConstantsVariables.minor_437) {
+//                            distance437List = (List<Double>) documentChange.getDocument().getData().get("Distance(m)");
+//                            distance437 = distance437List.get(distance437List.size() - 1);
+//                            distanceVector[0] = distance437 / 100000; //km to meters
+//
+//                        } else if (MinorType == ConstantsVariables.minor_570) {
+//                            distance570List = (List<Double>) documentChange.getDocument().getData().get("Distance(m)");
+//                            distance570 = distance570List.get(distance570List.size() - 1);
+//                            distanceVector[1] = distance570 / 100000;
+//                        } else if (MinorType == ConstantsVariables.minor_574) {
+//                            distance574List = (List<Double>) documentChange.getDocument().getData().get("Distance(m)");
+//                            distance574 = distance574List.get(distance574List.size() - 1);
+//                            distanceVector[2] = distance574 / 100000;
+//                        }
+//                    }
+//                }
+//                Log.i(TAG, String.valueOf(distanceVector.length));
+//                Log.i(TAG, "Distances: " + distance437 + distance570 + distance574);
+//
+//                //Trilateration
+//                NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distanceVector), new LevenbergMarquardtOptimizer());
+//                LeastSquaresOptimizer.Optimum optimum = solver.solve();
+//                calculatedPosition = optimum.getPoint().toArray();
+//
+//                Log.d(TAG, String.valueOf(calculatedPosition[0]));
+//                Log.d(TAG, String.valueOf(calculatedPosition[1]));
+//                directUser();
+//            }
+//        });
+//        double lat = Array.getDouble(calculatedPosition, 0);
+//        double lon = Array.getDouble(calculatedPosition, 1);
+//        LatLng position;
+//        position = new LatLng(lat, lon);
+
+        DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+        List<BeaconInfo> beaconList = db.getAllBeacons();
+
+        for (BeaconInfo beaconInfo : beaconList) {
+            int MinorType = beaconInfo.getMinor();
+
+            if (MinorType == ConstantsVariables.minor_437) {
+                distance437 =  beaconInfo.getDistance();
+                distanceVector[0] = distance437 / 100000; //km to meters
+
+            } else if (MinorType == ConstantsVariables.minor_570) {
+                distance570 = beaconInfo.getDistance();
+                distanceVector[1] = distance570 / 100000;
+
+            } else if (MinorType == ConstantsVariables.minor_574) {
+                distance574 = beaconInfo.getDistance();
+                distanceVector[2] = distance574 / 100000;
+            }
+        }
+        Log.i(TAG, String.valueOf(distanceVector.length));
+        Log.i(TAG, "Distances: " + distance437 + distance570 + distance574);
+
+        //Trilateration
+        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distanceVector), new LevenbergMarquardtOptimizer());
+        LeastSquaresOptimizer.Optimum optimum = solver.solve();
+        calculatedPosition = optimum.getPoint().toArray();
+
+    }
 
 
     public static boolean checkIsSupportedDeviceOrFinish(final Activity activity) {
