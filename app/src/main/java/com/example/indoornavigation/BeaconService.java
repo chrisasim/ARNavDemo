@@ -39,10 +39,16 @@ public class BeaconService extends Worker {
     public ScanSettings mScanSettings;
     public float Distance, DistanceSecondMethod;
     public static final String TAG = "Beacon Service";
+    private static final double KALMAN_R = 0.125d;
+    private static final double KALMAN_Q = 0.5d;
+    private final KalmanFilter  kalmanFilter;
+
 
 
     public BeaconService(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        kalmanFilter = new KalmanFilter(KALMAN_R, KALMAN_Q);
+
     }
 
 
@@ -63,8 +69,10 @@ public class BeaconService extends Worker {
                 for (ADStructure structure : structures) {
                     if (structure instanceof IBeacon) {
                         final IBeacon iBeacon = (IBeacon) structure;
-                        Distance = (float) calculateDistance(result.getRssi());
-                        DistanceSecondMethod = (float) calculateDistanceSecondMethod(result.getRssi());
+                        //Distance = (float) calculateDistance(result.getRssi());
+                        Distance = (float) calculateDistance(applyKalmanFilterToRssi(result.getRssi()));
+                        //DistanceSecondMethod = (float) calculateDistanceSecondMethod(result.getRssi());
+                        DistanceSecondMethod = (float) calculateDistanceSecondMethod(applyKalmanFilterToRssi(result.getRssi()));
                         if (db.getCount() == 0 || !db.checkIfSpecificMinorIsInDB(iBeacon.getMinor())) {
                             db.addBeacon(new BeaconInfo(iBeacon.getMinor(), Distance, result.getRssi()));
                         }
