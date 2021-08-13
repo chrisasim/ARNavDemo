@@ -144,6 +144,12 @@ public class BeaconService extends Worker {
         }
         return Result.success();
     }
+    
+        // Method Apply Filter
+    private double applyKalmanFilterToRssi(double rssi){
+        double filterrssi = kalmanFilter.applyFilter(rssi);
+        return filterrssi;
+    }
 
     private void setScanSettings() {
         ScanSettings.Builder mBuilder = new ScanSettings.Builder();
